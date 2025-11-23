@@ -1,0 +1,46 @@
+{
+  "manifest_version": 3,
+  "name": "Choice Arrivals Details Transfer",
+  "description": "Manual tool to run arrivals/transfer scripts only when triggered.",
+  "version": "1.0",
+
+  "permissions": [
+    "scripting",
+    "activeTab",
+    "storage",
+    "webNavigation",
+    "notifications"
+  ],
+
+  "host_permissions": [
+    "https://www.choiceadvantage.com/*"
+  ],
+
+  "action": {
+    "default_popup": "popup.html",
+    "default_title": "Choice Arrivals Transfer"
+  },
+
+  "background": {
+    "service_worker": "background.js",
+    "type": "module"
+  },
+
+  "content_scripts": [
+    {
+      "matches": ["https://www.choiceadvantage.com/choicehotels/ViewArrivalsList.init*"],
+      "js": ["scripts/scrapeArrivals.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://www.choiceadvantage.com/choicehotels/ViewDeparturesList.init*"],
+      "js": ["scripts/scrapeDepartures.js"],
+      "run_at": "document_end"
+    },
+    {
+      "matches": ["https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do?accountNumber=*"],
+      "js": ["scripts/checkCurrentGuestInWatchlist.js"],
+      "run_at": "document_end"
+    }
+  ]
+}
