@@ -41,6 +41,11 @@
       "matches": ["https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do?accountNumber=*"],
       "js": ["scripts/checkCurrentGuestInWatchlist.js"],
       "run_at": "document_end"
+    },
+    {
+      "matches": ["https://www.choiceadvantage.com/choicehotels/*"],
+      "js": ["scripts/injectPanel.js"],
+      "run_at": "document_end"
     }
   ]
 }

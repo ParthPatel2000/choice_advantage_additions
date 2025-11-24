@@ -1,4 +1,4 @@
-import {checkArrivalsAgainstLists} from './scripts/checkArrivalsAgainstLists.js'
+import { checkArrivalsAgainstLists } from './scripts/checkArrivalsAgainstLists.js'
 
 // defaults
 let arrivalsCache = [];
@@ -9,26 +9,27 @@ let cashDepFolioBalance = 0;
 let scriptQueue = [];
 let matches = [];
 let currentTabId = null;
+let panelWindowId = null;
 
-const responses_list = ["FOLIO_VIEW_BUTTON_CLICKED", "POST_CHARGE_CLICKED", "POST_CHARGE_SKIPPED", 
-                        "GUEST_REFUND_POSTED", "FILL_GUEST_INFO_DONE", "ADD_FOLIO_CLICKED", "CASH_DEP_FOLIO_CREATED",
-                        "POST_PAYMENT_CLICKED", "SECURITY_DEPOSIT_POSTED"];
+const responses_list = ["FOLIO_VIEW_BUTTON_CLICKED", "POST_CHARGE_CLICKED", "POST_CHARGE_SKIPPED",
+  "GUEST_REFUND_POSTED", "FILL_GUEST_INFO_DONE", "ADD_FOLIO_CLICKED", "CASH_DEP_FOLIO_CREATED",
+  "POST_PAYMENT_CLICKED", "SECURITY_DEPOSIT_POSTED"];
 
 chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
-  if(msg.type) console.log("Message Type:", msg.type);
-  if(msg.payload) console.log("Message Payload:", msg.payload);
-  if(msg.action) console.log("Message Action:", msg.action);
+  if (msg.type) console.log("Message Type:", msg.type);
+  if (msg.payload) console.log("Message Payload:", msg.payload);
+  if (msg.action) console.log("Message Action:", msg.action);
 
   // Handle msg.type
-  switch (msg.type) {  
+  switch (msg.type) {
     case "ARRIVALS_DATA":
       console.log("📥 RECEIVED arrivals data in background:", msg.payload);
-    
+
       arrivalsCache = msg.payload;
-    
+
       matches = checkArrivalsAgainstLists(arrivalsCache);
       console.log("Matching arrivals:", matches);
-    
+
       // send notifications for each match
       matches.forEach(match => {
         chrome.notifications.create({
@@ -37,11 +38,20 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
           title: `Match: ${match.reason || "NA"}`,
           message: `${match.first_name} ${match.last_name}`
         });
-      });    
+      });
+
+      // notifyDnrMatch(matches[0]);
       break;
 
     case "WATCH_LIST_MEMBER_FOUND":
       console.log("WATCH LIST MEMBER FOUND:")
+      // background.ts or background.js
+      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+        chrome.tabs.sendMessage(tabs[0].id, {
+          type: "NEW_DNR_ALERT",
+          payload: "New DNR Alert!"
+        });
+      });
       break;
 
     case "DEPARTURES_DATA":
@@ -71,8 +81,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case "NO_CASH_DEP_FOLIO":
       console.log("📥 No cash deposit folio found.");
       scriptQueue = scriptQueue.filter(step =>
-      !["scripts/clickPostCharge.js",
-        "scripts/postGuestRefund.js"].includes(step.file)
+        !["scripts/clickPostCharge.js",
+          "scripts/postGuestRefund.js"].includes(step.file)
       );
       break;
 
@@ -82,7 +92,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         runNextScript();
         break;
       }
-      if(msg.type) console.log("Unhandeled messsage: ", msg.type);
+      if (msg.type) console.log("Unhandeled messsage: ", msg.type);
       break;
   }
 
@@ -133,14 +143,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const hasCashDep = !!(guestInfoCache && guestInfoCache.cashDep);
 
         console.log("Starting bot. Cash deposit exists?", hasCashDep);
-    
+
         // --- BASE scripts that always run ---
         scriptQueue = [
           { file: "scripts/fillDetails.js", waitForMessage: "FILL_GUEST_INFO_DONE" },
           { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 3000 },
           // { file: "scripts/selectFolioAndScrape.js", waitForMessage: ["CASH_DEP_FOLIO_BALANCE", "NO_CASH_DEP_FOLIO"], delayBeforeRun: 3000 },
         ];
-        
+
         // --- Conditional branching ---  
         if (hasCashDep) {
           // If deposit exists, add the rest of steps
@@ -153,16 +163,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         } else {
           console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
         }
-        
+
         runNextScript();
       });
       break;
 
     case "POST_DEPOSIT_USING_CUSTOM_FOLIO_BUTTON":
       console.log("Starting deposit workflow.")
-      
+
       guestInfoCache["cashDep"] = 60;
-      
+
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         currentTabId = tabs[0].id;
         const hasCashDep = !!(guestInfoCache && guestInfoCache.cashDep);
@@ -181,11 +191,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         } else {
           console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
         }
-        
+
         runNextScript();
       });
       break;
-      
+
     case "POST_GUEST_REFUND_BUTTON":
       console.log("Starting refund workflow")
 
@@ -198,15 +208,15 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         ];
         runNextScript();
       });
-      
+
       break;
-      
+
     case "ADD_CASH_DEP_FOLIO":
       console.log("Starting ADD FOLIO workflow.")
 
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         currentTabId = tabs[0].id;
-        
+
         console.log("Adding FOLIO");
 
         // If deposit exists, add the rest of steps
@@ -246,7 +256,7 @@ function runNextScript() {
 
     // set expected message(s)
     if (next.waitForMessage) {
-      console.log("⏳ Waiting for:",next.waitForMessage || null);
+      console.log("⏳ Waiting for:", next.waitForMessage || null);
       return;
     }
 
@@ -256,3 +266,30 @@ function runNextScript() {
   }, delay);
 }
 
+function openPanel() {
+  if (panelWindowId !== null) return;
+
+  chrome.windows.create(
+    {
+      url: chrome.runtime.getURL("panel.html"),
+      type: "popup",
+      width: 300,
+      height: 400,
+      top: 100,
+      left: 100,
+    },
+    (newWindow) => {
+      panelWindowId = newWindow.id;
+    }
+  );
+}
+
+
+function notifyDnrMatch(match) {
+  if (panelWindowId === null) openPanel();
+
+  chrome.runtime.sendMessage({
+    type: "NEW_DNR_ALERT",
+    payload: match,
+  });
+}
