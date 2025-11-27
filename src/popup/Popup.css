@@ -1,1 +1,30 @@
 @import "tailwindcss";
+.panel {
+  @apply w-80 p-4 bg-gray-50 font-sans rounded-xl shadow-lg;
+}
+
+.title {
+  @apply text-lg font-semibold text-gray-900 mb-4;
+}
+
+.btn {
+  @apply flex-1 py-2 rounded-xl font-semibold text-white shadow-md transition transform hover:-translate-y-0.5;
+}
+
+.btn-group {
+  @apply flex gap-2 mb-3;
+}
+
+.btn-blue { @apply bg-blue-600 hover:bg-blue-700; }
+.btn-green { @apply bg-green-600 hover:bg-green-700; }
+.btn-purple { @apply bg-purple-600 hover:bg-purple-700; }
+.btn-orange { @apply bg-orange-500 hover:bg-orange-600; }
+.btn-red { @apply bg-red-600 hover:bg-red-700; }
+.btn-indigo { @apply bg-indigo-600 hover:bg-indigo-700; }
+.btn-teal { @apply bg-teal-600 hover:bg-teal-700; }
+.btn-gray { @apply w-full py-2 rounded-xl font-semibold text-white bg-gray-700 hover:bg-gray-800 shadow-md transition transform hover:-translate-y-0.5 mb-3; }
+.btn-dark { @apply w-full py-2 rounded-xl font-semibold text-white bg-gray-900 hover:bg-gray-950 shadow-md transition transform hover:-translate-y-0.5 mb-3; }
+
+.log-box {
+  @apply w-full h-36 p-2 rounded-xl border border-gray-300 font-mono text-sm bg-white text-gray-900 resize-none shadow-inner;
+}

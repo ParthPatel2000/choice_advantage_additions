@@ -1,3 +1,6 @@
+// import { writeFileSync } from "fs";
+
+
 export const inspectors = [
   { first_name: "JEFF", last_name: "LESTER", reason: "INSPECTOR" },
   { first_name: "MADELY", last_name: "AMPERO", reason: "INSPECTOR" },
@@ -67,3 +70,15 @@ export const inspectors = [
   { first_name: "SMITH", last_name: "JEFF", reason: "INSPECTOR" },
   { first_name: "STASEVYCH", last_name: "MARIA", reason: "INSPECTOR" }
 ];
+
+
+
+// // Convert to CSV
+// const header = Object.keys(inspectors[0]).join(",");
+// const rows = inspectors.map(item => Object.values(item).map(v => `"${v?v:"DNR"}"`).join(","));
+// const csv = [header, ...rows].join("\n");
+
+// // Write to file
+// writeFileSync("inspectors_list.csv", csv);
+
+// console.log("CSV file created: inspectors_list.csv");

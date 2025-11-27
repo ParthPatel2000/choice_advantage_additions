@@ -23,33 +23,50 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   // Handle msg.type
   switch (msg.type) {
     case "ARRIVALS_DATA":
-      console.log("📥 RECEIVED arrivals data in background:", msg.payload);
-
       arrivalsCache = msg.payload;
 
-      matches = checkArrivalsAgainstLists(arrivalsCache);
-      console.log("Matching arrivals:", matches);
+      checkArrivalsAgainstLists(arrivalsCache).then(result => {
+        matches = result;
+        console.log("Matching arrivals:", matches);
 
-      // send notifications for each match
-      matches.forEach(match => {
-        chrome.notifications.create({
-          type: "basic",
-          iconUrl: chrome.runtime.getURL("icons/notification32.png"), // <-- your PNG
-          title: `Match: ${match.reason || "NA"}`,
-          message: `${match.first_name} ${match.last_name}`
+        if (matches.length === 0) return;
+        // matches.forEach(match => {
+        //   chrome.notifications.create({
+        //     type: "basic",
+        //     iconUrl: chrome.runtime.getURL("icons/notification32.png"),
+        //     title: `Match: ${match.reason || "NA"}`,
+        //     message: `${match.first_name} ${match.last_name}`
+        //   });
+        // });
+
+        const text = matches
+          .map(match => `${match.last_name}, ${match.first_name} is on ${match.reason || "DNR"} list.`)
+          .join("\n");
+
+        chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+          chrome.tabs.sendMessage(tabs[0].id, {
+            type: "NEW_DNR_ALERT",
+            payload: {
+              text,
+              level: "warning"
+            }
+          });
         });
-      });
 
-      // notifyDnrMatch(matches[0]);
+      });
       break;
+
 
     case "WATCH_LIST_MEMBER_FOUND":
       console.log("WATCH LIST MEMBER FOUND:")
-      // background.ts or background.js
+
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "NEW_DNR_ALERT",
-          payload: "New DNR Alert!"
+          payload: {
+            text: "Guest is on DNR list",
+            level: "warning"
+          }
         });
       });
       break;
@@ -118,6 +135,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       sendResponse(matches || null);
       return true;
 
+    case "inject_script":
+    // console.log("Script Injection Requested:", msg.script);
+      if (!sender.tab?.id) return;
+
+      chrome.scripting.executeScript({
+        target: { tabId: sender.tab.id },
+        files: [msg.script]
+      });
+
+      return true;
+
+
     case "stop_bots":
       scriptQueue = [];
       console.log("Stopping All bots.");
@@ -168,7 +197,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       });
       break;
 
-    case "POST_DEPOSIT_USING_CUSTOM_FOLIO_BUTTON":
+    case "POST_DEPOSIT_60":
       console.log("Starting deposit workflow.")
 
       guestInfoCache["cashDep"] = 60;
@@ -202,6 +231,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         currentTabId = tabs[0].id;
         scriptQueue = [
+          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
           { file: "scripts/selectFolioAndScrape.js", waitForMessage: ["CASH_DEP_FOLIO_BALANCE", "NO_CASH_DEP_FOLIO"], delayBeforeRun: 1000 },
           { file: "scripts/clickPostCharge.js", waitForMessage: "POST_CHARGE_CLICKED", delayBeforeRun: 1000 },
           { file: "scripts/postGuestRefund.js", waitForMessage: "GUEST_REFUND_POSTED", delayBeforeRun: 1500 },
