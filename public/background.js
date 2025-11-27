@@ -30,25 +30,18 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         console.log("Matching arrivals:", matches);
 
         if (matches.length === 0) return;
-        // matches.forEach(match => {
-        //   chrome.notifications.create({
-        //     type: "basic",
-        //     iconUrl: chrome.runtime.getURL("icons/notification32.png"),
-        //     title: `Match: ${match.reason || "NA"}`,
-        //     message: `${match.first_name} ${match.last_name}`
-        //   });
-        // });
-
         const text = matches
           .map(match => `${match.last_name}, ${match.first_name} is on ${match.reason || "DNR"} list.`)
           .join("\n");
+
+
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, {
             type: "NEW_DNR_ALERT",
             payload: {
               text,
-              level: "warning"
+              level: "medium"
             }
           });
         });
@@ -58,14 +51,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
 
     case "WATCH_LIST_MEMBER_FOUND":
-      console.log("WATCH LIST MEMBER FOUND:")
-
+      console.log("WATCH LIST MEMBER FOUND:", msg.level, msg.list)
+      const text = `Guest is on ${msg.list} list`
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "NEW_DNR_ALERT",
           payload: {
-            text: "Guest is on DNR list",
-            level: "warning"
+            text: text,
+            level: msg.level
           }
         });
       });
@@ -136,7 +129,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       return true;
 
     case "inject_script":
-    // console.log("Script Injection Requested:", msg.script);
+      // console.log("Script Injection Requested:", msg.script);
       if (!sender.tab?.id) return;
 
       chrome.scripting.executeScript({

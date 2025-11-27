@@ -22,7 +22,7 @@ chrome.runtime.sendMessage({ action: "get_matches_cache" }, (matches) => {
     const matchByAccount = matches.find(m => m.reservationNumber === accountNumber);
     if (matchByAccount) {
       console.log(`⚠ WATCH LIST MEMBER FOUND (by account): ${matchByAccount.first_name} ${matchByAccount.last_name} → ${matchByAccount.reason}`);
-      chrome.runtime.sendMessage({ type: "WATCH_LIST_MEMBER_FOUND", match: matchByAccount });
+      chrome.runtime.sendMessage({ type: "WATCH_LIST_MEMBER_FOUND", list: matchByAccount.reason, level: matchByAccount.level });
     }
   }
 
@@ -33,10 +33,7 @@ chrome.runtime.sendMessage({ action: "get_matches_cache" }, (matches) => {
       m.first_name.toLowerCase() === (firstName || "").toLowerCase() &&
       m.last_name.toLowerCase() === (lastName || "").toLowerCase()
     );
-
-    if (matchByName) {
-      console.log(`⚠ WATCH LIST MEMBER FOUND (by name): ${matchByName.first_name} ${matchByName.last_name} → ${matchByName.reason}`);
-      chrome.runtime.sendMessage({ type: "WATCH_LIST_MEMBER_FOUND", match: matchByName });
-    }
+    console.log(`⚠ WATCH LIST MEMBER FOUND (by name): ${matchByName.first_name} ${matchByName.last_name} → ${matchByName.reason}`);
+    chrome.runtime.sendMessage({ type: "WATCH_LIST_MEMBER_FOUND", list: matchByAccount.reason, level: matchByAccount.level });
   }
 });

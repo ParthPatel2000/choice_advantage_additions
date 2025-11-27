@@ -34,12 +34,10 @@ export async function checkArrivalsAgainstLists(arrivals) {
         last_name: arrival.last_name,
         first_name: arrival.first_name,
         reservationNumber: arrival.reservationNumber,
-        reason: matchRow[2] || "DNR/INSPECTOR"
+        reason: matchRow[2] || "DNR/INSPECTOR",
+        level:matchRow[3]
       };
-      matches.push(match);
-      // 4️⃣ Notify background of the watchlist match
-      chrome.runtime.sendMessage({ type: "WATCH_LIST_MEMBER_FOUND", match });
-      
+      matches.push(match);      
       console.log(`⚠ Match found: ${match.last_name}, ${match.first_name} → ${match.reason}`);
     }
   });

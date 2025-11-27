@@ -24,7 +24,7 @@ function injectFloatingDiv() {
       border: "1px solid rgba(255, 255, 255, 0.25)",
       boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
       color: "black",
-      display: "flex",
+      display: "none",  //hidden Initially.
       alignItems: "center",
       justifyContent: "center",
       fontFamily: "Arial, sans-serif",
@@ -77,6 +77,8 @@ chrome.runtime.onMessage.addListener(msg => {
       div.innerText = msg.payload.text || "Alert";
       applyGlassStyle(div, msg.payload.level);
 
+      div.style.display = "flex";
+
       // Pop effect
       div.style.transform = "scale(1.1)";
       setTimeout(() => div.style.transform = "scale(1)", 300);
@@ -102,8 +104,8 @@ new MutationObserver(() => {
 function applyGlassStyle(div, type) {
   const styles = {
     success: { bg: "rgba(0,255,0,0.2)", border: "1px solid rgba(0,255,0,0.35)", color: "black" },
-    warning: { bg: "rgba(255,165,0,0.2)", border: "1px solid rgba(255,165,0,0.35)", color: "black" },
-    danger: { bg: "rgba(255,0,0,0.2)", border: "1px solid rgba(255,0,0,0.35)", color: "black" },
+    medium: { bg: "rgba(255,165,0,0.2)", border: "1px solid rgba(255,165,0,0.35)", color: "black" },
+    max: { bg: "rgba(255,0,0,0.2)", border: "1px solid rgba(255,0,0,0.35)", color: "black" },
     info: { bg: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.35)", color: "black" }
   };
 
