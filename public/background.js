@@ -1,15 +1,32 @@
 import { checkArrivalsAgainstLists } from './scripts/checkArrivalsAgainstLists.js'
+import { storage } from './storage.js';
 
-// defaults
 let arrivalsCache = [];
 let departuresCache = [];
 let stayoversCache = [];
 let guestInfoCache = {};
-let cashDepFolioBalance = 0;
-let scriptQueue = [];
 let matches = [];
+
+let scriptQueue = [];
 let currentTabId = null;
 let panelWindowId = null;
+
+
+(async () => {
+  arrivalsCache = await storage.get("arrivalsCache") || [];
+  departuresCache = await storage.get("departuresCache") || [];
+  stayoversCache = await storage.get("stayoversCache") || [];
+  guestInfoCache = await storage.get("guestInfoCache") || {};
+  matches = await storage.get("matches") || [];
+})();
+
+async function clearAllCaches() {
+  await storage.remove("arrivalsCache");
+  await storage.remove("departuresCache");
+  await storage.remove("stayoversCache");
+  await storage.remove("guestInfoCache");
+  await storage.remove("matches");
+}
 
 const responses_list = ["FOLIO_VIEW_BUTTON_CLICKED", "POST_CHARGE_CLICKED", "POST_CHARGE_SKIPPED",
   "GUEST_REFUND_POSTED", "FILL_GUEST_INFO_DONE", "ADD_FOLIO_CLICKED", "CASH_DEP_FOLIO_CREATED",
@@ -24,10 +41,12 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   switch (msg.type) {
     case "ARRIVALS_DATA":
       arrivalsCache = msg.payload;
+      storage.set("arrivalsCache", arrivalsCache);
 
       checkArrivalsAgainstLists(arrivalsCache).then(result => {
         matches = result;
         console.log("Matching arrivals:", matches);
+        storage.set("matches", matches);
 
         if (matches.length === 0) return;
         const text = matches
@@ -67,24 +86,27 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     case "DEPARTURES_DATA":
       console.log("📥 RECEIVED departures data:", msg.payload);
       departuresCache = msg.payload;
+      storage.set("departuresCache", departuresCache)
       break;
 
     case "GUEST_INFO_DATA":
       console.log("📥 Received guest info data:", msg.payload);
       guestInfoCache = { ...guestInfoCache, ...msg.payload };
+      storage.set("guestInfoCache", guestInfoCache)
       runNextScript();
       break;
 
     case "STAYOVERS_DATA":
       console.log("📥 Received stayovers data:", msg.payload);
       stayoversCache = msg.stayovers || [];
+      storage.set("stayoversCache", stayoversCache)
       console.log("💾 Stayovers saved:", stayoversCache);
       break;
 
     case "CASH_DEP_FOLIO_BALANCE":
       console.log("📥 Cash Deposit folio balance received:", msg.payload);
-      cashDepFolioBalance = msg.payload;
-      guestInfoCache["cashDep"] = cashDepFolioBalance ? cashDepFolioBalance.balance : 0;
+      guestInfoCache["cashDep"] = msg.payload?.balance || 0;
+      storage.set("guestInfoCache", guestInfoCache)
       runNextScript();
       break;
 
