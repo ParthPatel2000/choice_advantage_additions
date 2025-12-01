@@ -52,8 +52,7 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const text = matches
           .map(match => `${match.last_name}, ${match.first_name} is on ${match.reason || "DNR"} list.`)
           .join("\n");
-
-
+        
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, {

@@ -35,7 +35,8 @@ export async function checkArrivalsAgainstLists(arrivals) {
         first_name: arrival.first_name,
         reservationNumber: arrival.reservationNumber,
         reason: matchRow[2] || "DNR/INSPECTOR",
-        level:matchRow[3]
+        level:matchRow[3],
+        notes:matchRow[4]
       };
       matches.push(match);      
       console.log(`⚠ Match found: ${match.last_name}, ${match.first_name} → ${match.reason}`);

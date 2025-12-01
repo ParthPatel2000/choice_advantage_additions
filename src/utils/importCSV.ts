@@ -6,6 +6,13 @@ export const importCsv = async (file: File) => {
     .map(r => r.trim())
     .filter(r => r.length);
 
-  const parsed: string[][] = rows.map(r => r.split(","));
+  const parsed: string[][] = rows.map(r => {
+    const cols = r.split(",");
+    // Pad to 5 columns
+    while (cols.length < 5) cols.push("");
+    // Optionally, truncate extra columns if more than 5
+    return cols.slice(0, 5);
+  });
+
   return parsed;
 };

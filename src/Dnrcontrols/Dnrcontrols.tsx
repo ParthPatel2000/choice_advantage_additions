@@ -20,16 +20,18 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
   const [manualFirstName, setManualFirstName] = useState("");
   const [manualLastName, setManualLastName] = useState("");
   const [manualSeverity, setManualSeverity] = useState<"max" | "medium" | "info">("info");
+  const [manualList, setManualList] = useState("");
   const [manualReason, setManualReason] = useState("");
 
   const addManualEntry = () => {
-    if (!manualFirstName.trim() || !manualLastName.trim() || !manualReason.trim()) return;
+    if (!manualFirstName.trim() || !manualLastName.trim() || !manualList.trim() || !manualReason.trim()) return;
 
     const newRow: DnrRow = [
       manualFirstName.trim(),
       manualLastName.trim(),
-      manualReason.trim(),
-      manualSeverity
+      manualList.trim(),
+      manualSeverity,
+      manualReason.trim()
     ];
 
     setDnrList(prev => {
@@ -42,6 +44,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
     // Clear form
     setManualFirstName("");
     setManualLastName("");
+    setManualList("");
     setManualReason("");
     setManualSeverity("info");
   };
@@ -81,6 +84,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
 
         setManualFirstName(guest.firstName || "");
         setManualLastName(guest.lastName || "");
+        setManualList("");
         setManualReason("");
         setManualSeverity("info");
 
@@ -185,7 +189,15 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
 
               <input
                 type="text"
-                placeholder="Reason"
+                placeholder="DNR/Inspector/Regular"
+                value={manualList}
+                onChange={e => setManualList(e.target.value)}
+                className="border p-2 rounded"
+              />
+
+              <input
+                type="text"
+                placeholder="Reason/Notes"
                 value={manualReason}
                 onChange={e => setManualReason(e.target.value)}
                 className="border p-2 rounded"
@@ -229,7 +241,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
           </div>
 
 
-          
+
 
 
         </>
