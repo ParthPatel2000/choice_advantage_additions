@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 
 type DnrRow = string[];
 
@@ -9,6 +9,8 @@ interface Props {
 }
 
 const DnrListView: React.FC<Props> = ({ dnrList, setDnrList, goBack }) => {
+    const [showConfirmClear, setShowConfirmClear] = useState(false);
+
     const updateSeverity = (index: number, severity: string) => {
         setDnrList(prev => {
             const updated = [...prev];
@@ -41,43 +43,89 @@ const DnrListView: React.FC<Props> = ({ dnrList, setDnrList, goBack }) => {
 
     return (
         <div>
-            <h2 className="text-lg font-semibold mb-3">DNR List</h2>
+            <div className="flex items-center justify-between mb-4 relative">
+                {/* Left: Back button */}
+                <button
+                    onClick={goBack}
+                    className="bg-gray-700 text-white rounded hover:bg-gray-800 transition px-2 py-1"
+                    title="Back to Watch List"
+                >
+                    <span className="text-2xl leading-none">←</span>
+                </button>
 
-            <button
-                onClick={goBack}
-                className="bg-gray-500 text-white py-1 px-3 rounded mb-4 hover:bg-gray-600 transition"
-            >
-                Back
-            </button>
+                {/* Centered title */}
+                <h2 className="text-lg font-semibold absolute left-1/2 transform -translate-x-1/2">
+                    DNR List
+                </h2>
+
+                <button
+                    onClick={() => setShowConfirmClear(true)}
+                    className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+                    title="Clear the cached list, will stop all the watchlist alerts!!"
+                >
+                    Clear List
+                </button>
+
+            </div>
+
+
+
+            {showConfirmClear && (
+                <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
+                    <div className="bg-white p-6 rounded shadow-lg w-80 text-center">
+                        <p className="mb-4 font-semibold">Are you sure you want to clear the Watch list?</p>
+                        <div className="flex justify-between gap-4">
+                            <button
+                                onClick={() => {
+                                    setDnrList([]);
+                                    chrome.storage.local.remove("dnrList");
+                                    setShowConfirmClear(false);
+                                }}
+                                className="flex-1 bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
+                            >
+                                Yes
+                            </button>
+                            <button
+                                onClick={() => setShowConfirmClear(false)}
+                                className="flex-1 bg-gray-300 py-1 px-3 rounded hover:bg-gray-400 transition"
+                            >
+                                No
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            )}
+
+
 
             {dnrList.length <= 1 ? (
                 <div className="text-sm text-gray-600">No entries.</div>
             ) : (
-                // Scrollable container
-                <div className="max-h-96 overflow-y-auto overflow-x-auto border border-gray-300 rounded">
-                    <table className="table-auto border-collapse text-sm w-full">
+                <div className="max-h-96 overflow-y-auto overflow-x-hidden border border-gray-300 rounded hide-scrollbar">
+                    <table className="table-auto border-collapse text-sm w-full min-w-full">
                         <thead className="bg-gray-100 sticky top-0 z-10">
                             <tr>
-                                <th className="border px-2 py-2 text-left font-medium text-gray-700 w-32">
+                                <th className="border px-2 py-2 text-left font-medium text-gray-700">
                                     Name
                                     <div className="text-xs text-gray-500">first / last</div>
                                 </th>
 
-                                <th className="border px-2 py-2 text-left font-medium text-gray-700 w-20">
+                                <th className="border px-2 py-2 text-left font-medium text-gray-700">
                                     Tag
                                 </th>
 
-                                <th className="border px-2 py-2 text-left font-medium text-gray-700 w-20">
+                                <th className="border px-2 py-2 text-left font-medium text-gray-700">
                                     Severity
                                 </th>
 
-                                <th className="border px-2 py-2 text-left font-medium text-gray-700 w-20">
+                                <th className="border px-2 py-2 text-left font-medium text-gray-700">
                                     Actions
                                 </th>
                             </tr>
                         </thead>
 
                         <tbody>
+
                             {dnrList.slice(1).map((row, i) => {
                                 const index = i + 1;
 
@@ -116,10 +164,10 @@ const DnrListView: React.FC<Props> = ({ dnrList, setDnrList, goBack }) => {
                                 );
                             })}
                         </tbody>
-                    </table>
-                </div>
+                    </table >
+                </div >
             )}
-        </div>
+        </div >
     );
 };
 

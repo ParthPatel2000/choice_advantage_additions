@@ -63,16 +63,13 @@ const Popup: React.FC = () => {
 
   return (
     <div className="panel">
-      <h3 className="title">Choice Arrivals Details Transfer</h3>
 
-      <button className='btn-dark'
-        onClick={() => setShowMain(prev => !prev)}
-      >
-        {showMain ? 'show DNR controls' : "show main panel"}
-      </button>
-      {!showMain && <Dnrcontrols />}
-      {showMain && (
+      {showMain ? (
         <>
+          <h3 className="title">Choice Arrivals Details Transfer</h3>
+          <button className='btn-dark' onClick={() => setShowMain(false)}>
+            show DNR/WatchList controls
+          </button>
           <div className="btn-group">
             <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}>
               Scrape Bot
@@ -125,6 +122,8 @@ const Popup: React.FC = () => {
             Test DNR dialog
           </button>
         </>
+      ) : (
+        <Dnrcontrols goHome={() => setShowMain(true)} />
       )}
     </div>
   );
