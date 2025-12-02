@@ -50,9 +50,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
         if (matches.length === 0) return;
         const text = matches
-          .map(match => `${match.last_name}, ${match.first_name} is on ${match.reason || "DNR"} list.`)
+          .map(match => `${match.last_name}, ${match.first_name} is on ${match.list || "DNR"} list.`)
           .join("\n");
-        
+
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, {
@@ -70,13 +70,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     case "WATCH_LIST_MEMBER_FOUND":
       console.log("WATCH LIST MEMBER FOUND:", msg.level, msg.list)
-      const text = `Guest is on ${msg.list} list`
+      const text = `Guest is on ${msg.list} list.\n` +
+        `Reason:${msg.reason}`
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "NEW_DNR_ALERT",
           payload: {
             text: text,
-            level: msg.level
+            level: msg.level,
+            list: msg.list,
+            reason: msg.reason
           }
         });
       });

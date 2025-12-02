@@ -34,12 +34,12 @@ export async function checkArrivalsAgainstLists(arrivals) {
         last_name: arrival.last_name,
         first_name: arrival.first_name,
         reservationNumber: arrival.reservationNumber,
-        reason: matchRow[2] || "DNR/INSPECTOR",
+        list: matchRow[2] || "DNR/INSPECTOR",
         level:matchRow[3],
-        notes:matchRow[4]
+        reason:matchRow[4]
       };
       matches.push(match);      
-      console.log(`⚠ Match found: ${match.last_name}, ${match.first_name} → ${match.reason}`);
+      console.log(`⚠ Match found: ${match.last_name}, ${match.first_name} → ${match.list}`);
     }
   });
 
