@@ -73,18 +73,71 @@ injectFloatingDiv();
 chrome.runtime.onMessage.addListener(msg => {
   if (msg.type === "NEW_DNR_ALERT") {
     const div = document.getElementById("dnr-floating-div");
-    if (div) {
+    if (!div) return;
+
+    // Clear previous content
+    div.innerHTML = "";
+
+    // Check if payload is an object with multiple alerts
+    if (msg.payload && typeof msg.payload === "object" && Array.isArray(msg.payload.alerts)) {
+      // Parent div: neutral "info" styling
+
+      applyGlassStyle(div, "info");
+
+      Object.assign(div.style, {
+        width: "220px",
+        maxWidth: "90vw",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "stretch",
+        padding: "10px",
+      });
+
+      // Create child divs for each alert
+      msg.payload.alerts.forEach(alert => {
+        const child = document.createElement("div");
+        child.innerText = alert.text || "Alert";
+
+        Object.assign(child.style, {
+          width: "100%",
+          marginBottom: "4px",
+          padding: "6px 10px",
+          borderRadius: "8px",
+          textAlign: "center",
+          fontSize: "14px",
+          background: "rgba(255,255,255,0.18)",
+          transition: "all 0.3s",
+
+          // New fixes:
+          whiteSpace: "normal",     // allow text to wrap
+          overflowWrap: "break-word", // break long words if needed
+          boxSizing: "border-box",  // include padding in width
+        });
+
+        // Apply individual color based on level
+        applyGlassStyle(child, alert.level || "info");
+
+        div.appendChild(child);
+      });
+
+
+
+    } else {
+      // Single alert (old behavior)
       div.innerText = msg.payload.text || "Alert";
-      applyGlassStyle(div, msg.payload.level);
-
+      applyGlassStyle(div, msg.payload.level || "info");
       div.style.display = "flex";
-
-      // Pop effect
-      div.style.transform = "scale(1.1)";
-      setTimeout(() => div.style.transform = "scale(1)", 300);
+      div.style.flexDirection = "row";
+      div.style.alignItems = "center";
+      div.style.justifyContent = "center";
     }
+
+    // Pop effect
+    div.style.transform = "scale(1.1)";
+    setTimeout(() => div.style.transform = "scale(1)", 300);
   }
 });
+
 
 // SPA URL observer
 let lastUrl = location.href;
@@ -104,8 +157,8 @@ new MutationObserver(() => {
 function applyGlassStyle(div, type) {
   const styles = {
     success: { bg: "rgba(0,255,0,0.2)", border: "1px solid rgba(0,255,0,0.35)", color: "black" },
-    medium: { bg: "rgba(255,165,0,0.2)", border: "1px solid rgba(255,165,0,0.35)", color: "black" },
-    max: { bg: "rgba(255,0,0,0.2)", border: "1px solid rgba(255,0,0,0.35)", color: "black" },
+    medium: { bg: "rgba(255,165,0,0.45)", border: "1px solid rgba(255,165,0,0.75)", color: "black" },
+    max: { bg: "rgba(255,0,0,0.45)", border: "1px solid rgba(255,0,0,0.75)", color: "black" },
     info: { bg: "rgba(255,255,255,0.18)", border: "1px solid rgba(255,255,255,0.35)", color: "black" }
   };
 

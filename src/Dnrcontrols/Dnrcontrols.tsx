@@ -17,6 +17,12 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
 
 
   // Manual add form state
+  const [errors, setErrors] = useState({
+    first: false,
+    last: false,
+    list: false,
+  });
+
   const [manualFirstName, setManualFirstName] = useState("");
   const [manualLastName, setManualLastName] = useState("");
   const [manualSeverity, setManualSeverity] = useState<"max" | "medium" | "info">("info");
@@ -24,7 +30,21 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
   const [manualReason, setManualReason] = useState("");
 
   const addManualEntry = () => {
-    if (!manualFirstName.trim() || !manualLastName.trim() || !manualList.trim() || !manualReason.trim()) return;
+    const firstMissing = !manualFirstName.trim();
+    const lastMissing = !manualLastName.trim();
+    const listMissing = !manualList.trim();
+
+    if (firstMissing || lastMissing || listMissing) {
+      setErrors({
+        first: firstMissing,
+        last: lastMissing,
+        list: listMissing,
+      });
+      return;
+    }
+
+    // Clear errors when valid
+    setErrors({ first: false, last: false, list: false });
 
     const newRow: DnrRow = [
       manualFirstName.trim(),
@@ -174,26 +194,46 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
             <div className="flex flex-col gap-2">
               <input
                 type="text"
-                placeholder="First Name"
+                placeholder={errors.first ? "Required" : "First Name*"}
                 value={manualFirstName}
-                onChange={e => setManualFirstName(e.target.value)}
-                className="border p-2 rounded"
-              />
-              <input
-                type="text"
-                placeholder="Last Name"
-                value={manualLastName}
-                onChange={e => setManualLastName(e.target.value)}
-                className="border p-2 rounded"
+                onChange={e => {
+                  setManualFirstName(e.target.value);
+                  if (errors.first) setErrors(prev => ({ ...prev, first: false }));
+                }}
+                onFocus={() => {
+                  if (errors.first) setErrors(prev => ({ ...prev, first: false }));
+                }}
+                className={`border p-2 rounded ${errors.first ? "border-red-500 placeholder-red-500" : ""}`}
               />
 
               <input
                 type="text"
-                placeholder="DNR/Inspector/Regular"
-                value={manualList}
-                onChange={e => setManualList(e.target.value)}
-                className="border p-2 rounded"
+                placeholder={errors.last ? "Required" : "Last Name*"}
+                value={manualLastName}
+                onChange={e => {
+                  setManualLastName(e.target.value);
+                  if (errors.last) setErrors(prev => ({ ...prev, last: false }));
+                }}
+                onFocus={() => {
+                  if (errors.last) setErrors(prev => ({ ...prev, last: false }));
+                }}
+                className={`border p-2 rounded ${errors.last ? "border-red-500 placeholder-red-500" : ""}`}
               />
+
+              <input
+                type="text"
+                placeholder={errors.list ? "Required" : "DNR/local/trouble/*"}
+                value={manualList}
+                onChange={e => {
+                  setManualList(e.target.value);
+                  if (errors.list) setErrors(prev => ({ ...prev, list: false }));
+                }}
+                onFocus={() => {
+                  if (errors.list) setErrors(prev => ({ ...prev, list: false }));
+                }}
+                className={`border p-2 rounded ${errors.list ? "border-red-500 placeholder-red-500" : ""}`}
+              />
+
 
               <input
                 type="text"
@@ -239,10 +279,6 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               View/Edit List
             </button>
           </div>
-
-
-
-
 
         </>
       ) : (

@@ -49,17 +49,19 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         storage.set("matches", matches);
 
         if (matches.length === 0) return;
-        const text = matches
-          .map(match => `${match.last_name}, ${match.first_name} is on ${match.list || "DNR"} list.`)
-          .join("\n");
-
+        const alerts = matches
+          .map((match) => {
+            return {
+              text: `${match.last_name}, ${match.first_name} is on ${match.list || "DNR"} list.`,
+              level: match.level
+            }
+          });
 
         chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
           chrome.tabs.sendMessage(tabs[0].id, {
             type: "NEW_DNR_ALERT",
             payload: {
-              text,
-              level: "medium"
+              alerts
             }
           });
         });
@@ -70,16 +72,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     case "WATCH_LIST_MEMBER_FOUND":
       console.log("WATCH LIST MEMBER FOUND:", msg.level, msg.list)
-      const text = `Guest is on ${msg.list} list.\n` +
-        `Reason:${msg.reason}`
+      const pre_text = `Guest is on ${msg.list} list.\n`;
+      const final_text = msg.reason ? pre_text + "Reason: " + msg.reason : pre_text;
+
       chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
         chrome.tabs.sendMessage(tabs[0].id, {
           type: "NEW_DNR_ALERT",
           payload: {
-            text: text,
+            text: final_text,
             level: msg.level,
-            list: msg.list,
-            reason: msg.reason
+            list: msg.list
           }
         });
       });

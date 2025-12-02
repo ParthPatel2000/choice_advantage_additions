@@ -50,8 +50,8 @@
     },
     {
       "matches": [
-        "https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do?accountNumber=*",
-        "https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do"
+        "https://www.choiceadvantage.com/choicehotels/FindInHouseGuestByAccount.do*",
+        "https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do?accountNumber=*"
       ],
       "js": [
         "scripts/checkCurrentGuestInWatchlist.js"
