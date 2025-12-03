@@ -1,4 +1,90 @@
 // injectPanel.js
+
+// Inject Stayovers Panel
+function injectStayoverDiv() {
+  let div = document.getElementById("stayovers-floating-div");
+
+  if (!div) {
+    div = document.createElement("div");
+    div.id = "stayovers-floating-div";
+
+    // Make it draggable like the main panel
+    makeDraggable(div);
+
+    // Base glassmorphic styles
+    Object.assign(div.style, {
+      position: "fixed",
+      bottom: "150px", // adjust if you want it above the main panel
+      right: "20px",
+      width: "220px",
+      zIndex: "999999",
+      borderRadius: "12px",
+      background: "rgba(255, 255, 255, 0.18)",
+      backdropFilter: "blur(12px) saturate(180%)",
+      WebkitBackdropFilter: "blur(12px) saturate(180%)",
+      border: "1px solid rgba(255, 255, 255, 0.25)",
+      boxShadow: "0 8px 20px rgba(0, 0, 0, 0.25)",
+      color: "black",
+      display: "none",
+      alignItems: "center",
+      justifyContent: "center",
+      fontFamily: "Arial, sans-serif",
+      fontSize: "16px",
+      textAlign: "center",
+      transition: "all 0.3s",
+      padding: "10px",
+      userSelect: "none",
+      cursor: "move"
+    });
+
+    div.innerText = "Checking stayovers...";
+    document.body.appendChild(div);
+  }
+
+  // Fetch stayovers from local storage
+  chrome.storage.local.get(["stayoversCache"], ({ stayoversCache }) => {
+    div.innerHTML = "";
+
+    if (!stayoversCache || stayoversCache.length === 0) {
+      div.style.display = "none";
+      return;
+    }
+
+    div.style.display = "flex";
+    div.style.flexDirection = "column";
+    div.style.alignItems = "stretch";
+    div.style.padding = "10px";
+    applyGlassStyle(div, "info");
+
+    stayoversCache.forEach(s => {
+      const child = document.createElement("div");
+      child.innerText = `${s.last_name} ${s.first_name} - Follow Up Reservation`;
+      Object.assign(child.style, {
+        width: "100%",
+        marginBottom: "4px",
+        padding: "6px 10px",
+        borderRadius: "8px",
+        textAlign: "center",
+        fontSize: "14px",
+        background: "rgba(255,255,255,0.18)",
+        whiteSpace: "normal",
+        overflowWrap: "break-word",
+        boxSizing: "border-box",
+      });
+
+      div.appendChild(child);
+    });
+
+    div.style.transform = "scale(1.1)";
+    setTimeout(() => div.style.transform = "scale(1)", 300);
+  });
+}
+
+// Call this on page load and whenever the DOM might remove the panel
+injectStayoverDiv();
+
+
+// DNR/watchlist Panel.
 function injectFloatingDiv() {
   let div = document.getElementById("dnr-floating-div");
 
@@ -69,7 +155,7 @@ function makeDraggable(el) {
 // Inject initially
 injectFloatingDiv();
 
-// Listen for messages
+// Listen for Alert (Watchlkist Hit) messages
 chrome.runtime.onMessage.addListener(msg => {
   if (msg.type === "NEW_DNR_ALERT") {
     const div = document.getElementById("dnr-floating-div");
@@ -120,8 +206,6 @@ chrome.runtime.onMessage.addListener(msg => {
         div.appendChild(child);
       });
 
-
-
     } else {
       // Single alert (old behavior)
       div.innerText = msg.payload.text || "Alert";
@@ -138,19 +222,20 @@ chrome.runtime.onMessage.addListener(msg => {
   }
 });
 
-
 // SPA URL observer
 let lastUrl = location.href;
 new MutationObserver(() => {
   if (location.href !== lastUrl) {
     lastUrl = location.href;
     injectFloatingDiv();
+    injectStayoverDiv();
   }
 }).observe(document, { subtree: true, childList: true });
 
 // DOM observer (if SPA removes our div)
 new MutationObserver(() => {
   if (!document.getElementById("dnr-floating-div")) injectFloatingDiv();
+  if (!document.getElementById("stayovers-floating-div")) injectStayoverDiv();
 }).observe(document.body, { childList: true, subtree: true });
 
 // Glass style application

@@ -286,6 +286,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 });
 
 
+
+
 function runNextScript() {
   if (!scriptQueue.length) {
     console.log("No more scripts to run.");
@@ -334,11 +336,47 @@ function openPanel() {
 }
 
 
-function notifyDnrMatch(match) {
-  if (panelWindowId === null) openPanel();
-
-  chrome.runtime.sendMessage({
-    type: "NEW_DNR_ALERT",
-    payload: match,
-  });
+// Normalize names (trim + uppercase)
+function normalize(str) {
+  return (str || "").trim().toUpperCase();
 }
+
+// Main function to compute stayovers
+async function computeStayovers() {
+  const data = await chrome.storage.local.get(["arrivalsCache", "departuresCache"]);
+  const arrivals = Array.isArray(data.arrivalsCache) ? data.arrivalsCache : [];
+  const departures = Array.isArray(data.departuresCache) ? data.departuresCache : [];
+
+  // Build departure lookup
+  const departureMap = new Map();
+  departures.forEach(dep => {
+    const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
+    departureMap.set(key, true);
+  });
+
+  // Build stayover list
+  const stayovers = [];
+  arrivals.forEach(arr => {
+    const key = `${normalize(arr.last_name)}|${normalize(arr.first_name)}`;
+    if (departureMap.has(key)) {
+      stayovers.push({
+        first_name: arr.first_name,
+        last_name: arr.last_name
+      });
+    }
+  });
+
+  // Save to storage
+  await chrome.storage.local.set({ stayoversCache: stayovers });
+  console.log("Stayovers updated:", stayovers);
+}
+
+// Listen for changes to arrivals or departures
+chrome.storage.onChanged.addListener((changes, area) => {
+  if (area !== "local") return;
+
+  if (changes.arrivalsCache || changes.departuresCache) {
+    computeStayovers();
+  }
+});
+
