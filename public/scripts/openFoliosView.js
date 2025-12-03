@@ -1,5 +1,3 @@
-// // openFoliosView.js
-
 // openFoliosView.js
 
 function notify() {
@@ -28,15 +26,7 @@ if (isOnGuestFolioPage()) {
   }
 
   waitForElement('#guestFolioEnabled', (folioLink) => {
+    notify();
     folioLink.click();
-
-    // After clicking, continuously check for the Guest Folio h3
-    const checkInterval = setInterval(() => {
-      if (isOnGuestFolioPage()) {
-        clearInterval(checkInterval);
-        console.log("Reached Guest Folio page → sending message");
-        notify();
-      }
-    }, 200);
   });
 }
