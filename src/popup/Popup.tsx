@@ -5,21 +5,21 @@ import EditableDeposits from '../EditableDeposits/EditableDeposits';
 
 
 const Popup: React.FC = () => {
-  // const [logs, setLogs] = useState<string>('');
   const [showMain, setShowMain] = useState(true);
-
-  // const log = (msg: string) => setLogs(prev => prev + msg + '\n');
-
+  
   const injectScript = (fileName: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tabId = tabs[0].id!;
       chrome.scripting.executeScript({ target: { tabId }, files: [fileName] }, () => {
-        // log(`✅ ${fileName} injected`);
       });
     });
   };
-
+  
   const sendMessage = (action: string) => chrome.runtime.sendMessage({ action });
+  
+  
+  // const [logs, setLogs] = useState<string>('');
+  // const log = (msg: string) => setLogs(prev => prev + msg + '\n');
 
   // async function viewCache() {
   //   const get = (action: string) =>
