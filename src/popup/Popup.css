@@ -29,3 +29,16 @@
 .log-box {
   @apply w-full h-36 p-2 rounded-xl border border-gray-300 font-mono text-sm bg-white text-gray-900 resize-none shadow-inner;
 }
+
+
+
+.deposit-input {
+  width: 100px;
+  padding: 4px 8px;
+  margin-right: 4px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+  text-align: center;
+}
+
+

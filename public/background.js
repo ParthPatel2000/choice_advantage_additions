@@ -216,33 +216,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       });
       break;
 
-    case "POST_DEPOSIT_60":
-      console.log("Starting deposit workflow.")
-
-      guestInfoCache["cashDep"] = 60;
-
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        currentTabId = tabs[0].id;
-        const hasCashDep = !!(guestInfoCache && guestInfoCache.cashDep);
-
-        console.log("Adding Deposit");
-        // --- Conditional RUN ---  
-        if (hasCashDep) {
-          // If deposit exists, add the rest of steps
-          scriptQueue = [
-            { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
-            { file: "scripts/clickAddFolio.js", waitForMessage: "ADD_FOLIO_CLICKED", delayBeforeRun: 1500 },
-            { file: "scripts/createCashDepFolio.js", waitForMessage: "CASH_DEP_FOLIO_CREATED", delayBeforeRun: 1500 },
-            { file: "scripts/clickPostPayment.js", waitForMessage: "POST_PAYMENT_CLICKED", delayBeforeRun: 1500 },
-            { file: "scripts/postSecurityDeposit.js", waitForMessage: "SECURITY_DEPOSIT_POSTED", delayBeforeRun: 1500 },
-          ];
-        } else {
-          console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
-        }
-
-        runNextScript();
-      });
+    case "POST_DEPOSIT_SLT_0":
+      handleDepositSlot(0);
       break;
+
+    case "POST_DEPOSIT_SLT_1":
+      handleDepositSlot(1);
+      break;
+
 
     case "POST_GUEST_REFUND_BUTTON":
       console.log("Starting refund workflow")
@@ -285,6 +266,37 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
   }
 });
 
+function handleDepositSlot(slotIndex) {
+  console.log(`Starting Slot ${slotIndex + 1} deposit workflow.`);
+
+  chrome.storage.local.get("depositButtons", (result) => {
+    const depositButtons =
+      Array.isArray(result.depositButtons) && result.depositButtons.every(v => typeof v === 'string')
+        ? result.depositButtons
+        : ["60", "100"]; // default fallback
+
+    const cashDepValue = depositButtons[slotIndex] ?? "0";
+    guestInfoCache["cashDep"] = cashDepValue;
+
+    console.log(`Using cash deposit value for Slot ${slotIndex}:`, guestInfoCache["cashDep"]);
+
+    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+      currentTabId = tabs[0].id;
+      if (guestInfoCache.cashDep) {
+        scriptQueue = [
+          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
+          { file: "scripts/clickAddFolio.js", waitForMessage: "ADD_FOLIO_CLICKED", delayBeforeRun: 1500 },
+          { file: "scripts/createCashDepFolio.js", waitForMessage: "CASH_DEP_FOLIO_CREATED", delayBeforeRun: 1500 },
+          { file: "scripts/clickPostPayment.js", waitForMessage: "POST_PAYMENT_CLICKED", delayBeforeRun: 1500 },
+          { file: "scripts/postSecurityDeposit.js", waitForMessage: "SECURITY_DEPOSIT_POSTED", delayBeforeRun: 1500 },
+        ];
+      } else {
+        console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
+      }
+      runNextScript();
+    });
+  });
+}
 
 
 

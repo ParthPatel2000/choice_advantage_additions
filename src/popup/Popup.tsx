@@ -1,64 +1,66 @@
-import React, { useState } from 'react';
+import React, { useState} from 'react';
 import './Popup.css'
 import Dnrcontrols from '../Dnrcontrols/Dnrcontrols';
+import EditableDeposits from '../EditableDeposits/EditableDeposits';
+
 
 const Popup: React.FC = () => {
-  const [logs, setLogs] = useState<string>('');
+  // const [logs, setLogs] = useState<string>('');
   const [showMain, setShowMain] = useState(true);
 
-  const log = (msg: string) => setLogs(prev => prev + msg + '\n');
+  // const log = (msg: string) => setLogs(prev => prev + msg + '\n');
 
   const injectScript = (fileName: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tabId = tabs[0].id!;
       chrome.scripting.executeScript({ target: { tabId }, files: [fileName] }, () => {
-        log(`✅ ${fileName} injected`);
+        // log(`✅ ${fileName} injected`);
       });
     });
   };
 
   const sendMessage = (action: string) => chrome.runtime.sendMessage({ action });
 
-  async function viewCache() {
-    const get = (action: string) =>
-      new Promise((resolve) => {
-        chrome.runtime.sendMessage({ action }, (res) => {
-          resolve(res || null);
-        });
-      });
+  // async function viewCache() {
+  //   const get = (action: string) =>
+  //     new Promise((resolve) => {
+  //       chrome.runtime.sendMessage({ action }, (res) => {
+  //         resolve(res || null);
+  //       });
+  //     });
 
-    const [
-      guestInfo,
-      arrivals,
-      departures,
-      stayovers,
-      matches
-    ] = await Promise.all([
-      get("get_guest_info"),
-      get("get_arrivals_cache"),
-      get("get_departures_cache"),
-      get("get_stayovers_cache"),
-      get("get_matches_cache")
-    ]);
+  //   const [
+  //     guestInfo,
+  //     arrivals,
+  //     departures,
+  //     stayovers,
+  //     matches
+  //   ] = await Promise.all([
+  //     get("get_guest_info"),
+  //     get("get_arrivals_cache"),
+  //     get("get_departures_cache"),
+  //     get("get_stayovers_cache"),
+  //     get("get_matches_cache")
+  //   ]);
 
-    log("All caches fetched.");
+  //   log("All caches fetched.");
 
-    const data = {
-      guestInfo,
-      arrivals,
-      departures,
-      stayovers,
-      matches
-    };
+  //   const data = {
+  //     guestInfo,
+  //     arrivals,
+  //     departures,
+  //     stayovers,
+  //     matches
+  //   };
 
-    log("GuestInfo: " + JSON.stringify(data.guestInfo, null, 2));   // final combined output
-    log("Arrivals: " + JSON.stringify(data.arrivals, null, 2));   // final combined output
-    log("Departures: " + JSON.stringify(data.departures, null, 2));   // final combined output
-    log("Stayovers: " + JSON.stringify(data.stayovers, null, 2));   // final combined output
-    log("Watch List Matches: " + JSON.stringify(data.matches, null, 2));   // final combined output
+  //   log("GuestInfo: " + JSON.stringify(data.guestInfo, null, 2));   // final combined output
+  //   log("Arrivals: " + JSON.stringify(data.arrivals, null, 2));   // final combined output
+  //   log("Departures: " + JSON.stringify(data.departures, null, 2));   // final combined output
+  //   log("Stayovers: " + JSON.stringify(data.stayovers, null, 2));   // final combined output
+  //   log("Watch List Matches: " + JSON.stringify(data.matches, null, 2));   // final combined output
 
-    return data;
-  }
+  //   return data;
+  // }
 
 
   return (
@@ -66,10 +68,7 @@ const Popup: React.FC = () => {
 
       {showMain ? (
         <>
-          <h3 className="title">Choice Arrivals Details Transfer</h3>
-          <button className='btn-dark' onClick={() => setShowMain(false)}>
-            show DNR/WatchList controls
-          </button>
+          <h3 className="title flex-1 truncate">Choice Advantage Additions</h3>
           <div className="btn-group">
             <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}>
               Scrape Bot
@@ -79,10 +78,8 @@ const Popup: React.FC = () => {
             </button>
           </div>
 
+          <EditableDeposits sendMessage={(action) => chrome.runtime.sendMessage({ action })} />
           <div className="btn-group">
-            <button className="btn btn-purple" onClick={() => sendMessage('POST_DEPOSIT_60')}>
-              60 CASH DEPOSIT
-            </button>
             <button className="btn btn-orange" onClick={() => sendMessage('ADD_CASH_DEP_FOLIO')}>
               Add CASH DEP FOLIO
             </button>
@@ -99,16 +96,20 @@ const Popup: React.FC = () => {
               Fill Guest Info
             </button>
           </div>
+          <button className='btn-dark' onClick={() => setShowMain(false)}>
+            DNR/WatchList controls
+          </button>
 
-          <button className="btn-gray" onClick={() => injectScript('scripts/getFollowups.js')}>
+
+          {/* <button className="btn-gray" onClick={() => injectScript('scripts/getFollowups.js')}>
             Get Stayovers
-          </button>
+          </button> */}
 
-          <button className="btn-dark" onClick={viewCache}>
+          {/* <button className="btn-dark" onClick={viewCache}>
             View Cached Data
-          </button>
+          </button> */}
 
-          <textarea
+          {/* <textarea
             value={logs}
             readOnly
             placeholder="Output logs here..."
@@ -120,7 +121,7 @@ const Popup: React.FC = () => {
             onClick={() => chrome.runtime.sendMessage({ type: 'WATCH_LIST_MEMBER_FOUND' })}
           >
             Test DNR dialog
-          </button>
+          </button> */}
         </>
       ) : (
         <Dnrcontrols goHome={() => setShowMain(true)} />

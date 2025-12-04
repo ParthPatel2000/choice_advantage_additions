@@ -1,0 +1,48 @@
+@import "tailwindcss";
+
+.deposit-group {
+  display: flex;
+  @apply flex gap-2 mb-3;
+  gap: 4px;
+  flex-wrap: wrap;
+  padding: auto;
+  align-items: center;
+}
+
+.deposit-button {
+  @apply flex-1 py-2 rounded-xl font-semibold text-white shadow-md transition transform hover:-translate-y-0.5;
+  text-align: center;
+  box-sizing: border-box;
+}
+
+.deposit-input {
+  flex: 1;
+  /* match button width */
+  min-width: 80px;
+  /* same as before */
+  padding: 6px 8px;
+  /* similar vertical padding to button */
+  font-size: 14px;
+  border-radius: 1rem;
+  /* match rounded-xl */
+  border: 1px solid #ccc;
+  text-align: center;
+  box-sizing: border-box;
+  transition: transform 0.1s ease-in-out;
+}
+
+.deposit-toggle {
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0;
+  min-width: auto;
+  height: 100%;
+  font-size: 14px;
+  color: black;
+}
+
+.deposit-toggle input:checked+span {
+  color: green;
+}
