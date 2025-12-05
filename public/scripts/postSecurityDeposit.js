@@ -86,7 +86,7 @@
 
         console.log("Clicking Save...");
         chrome.runtime.sendMessage({ type: "SECURITY_DEPOSIT_POSTED" });
-        // getSaveBtn().click();
+        getSaveBtn().click();
 
         console.log("✔ SPA-safe Security Deposit automation complete");
     }
