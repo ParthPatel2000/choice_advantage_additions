@@ -169,6 +169,10 @@ const Popup: React.FC = () => {
       ) : (
         <Dnrcontrols goHome={() => setShowMain(true)} />
       )}
+
+      <span className="absolute bottom-1 right-2 text-xs text-gray-400 select-none pointer-events-none">
+        by Parth
+      </span>
     </div>
   );
 

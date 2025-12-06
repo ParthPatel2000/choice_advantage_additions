@@ -31,21 +31,22 @@ export default function Settings() {
 
       <div className="flex items-center gap-3">
         <span className="text-gray-800 font-medium">Experimental Features</span>
-        
+
         {/* Toggle switch */}
         <button
           onClick={toggleExperimental}
-          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 focus:outline-none ${
-            experimental ? "bg-green-500 justify-end" : "bg-gray-300 justify-start"
-          }`}
+          className={`w-12 h-6 flex items-center rounded-full p-1 duration-300 focus:outline-none ${experimental ? "bg-green-500 justify-end" : "bg-gray-300 justify-start"
+            }`}
         >
           <span className="w-4 h-4 bg-white rounded-full shadow-md transform duration-300"></span>
         </button>
       </div>
 
       <p className="text-gray-500 mt-2 text-sm">
-        Turning this on will show experimental features in the extension UI.
+        Turning this on will show experimental features in the extension UI.<br />
+        Although heavily tested, not for everyone; they are hidden by default.
       </p>
+
     </div>
   );
 }
