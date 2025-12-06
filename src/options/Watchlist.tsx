@@ -162,34 +162,42 @@ const Watchlist = () => {
                     {/* First Name / Last Name */}
                     <td className="border border-gray-300 px-2 py-2 w-40">
                       <div className="flex flex-col leading-tight">
-                      {isEditing ? (
-                        <>
-                          <input
-                            value={editedRow![0]}
-                            onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value, ...prev.slice(1)] : null)}
-                            className="w-full border px-1 py-1 rounded mb-1"
-                          />
-                          <input
-                            value={editedRow![1]}
-                            onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value, ...prev.slice(2)] : null)}
-                            className="w-full border px-1 py-1 rounded text-xs text-gray-600"
-                          />
-                        </>
-                      ) : (
-                        <>
-                          <span>{row[0]}</span>
-                          <span className="text-xs text-gray-600">{row[1]}</span>
-                        </>
-                      )}
+                        {isEditing ? (
+                          <>
+                            <input
+                              value={editedRow![0]}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value, ...prev.slice(1)] : null)}
+                              className="w-full border px-1 py-1 rounded mb-1"
+                            />
+                            <input
+                              value={editedRow![1]}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value, ...prev.slice(2)] : null)}
+                              className="w-full border px-1 py-1 rounded text-xs text-gray-600"
+                            />
+                          </>
+                        ) : (
+                          <>
+                            <span>{row[0]}</span>
+                            <span className="text-xs text-gray-600">{row[1]}</span>
+                          </>
+                        )}
                       </div>
                     </td>
 
                     {/* Notes */}
-                    <td  className="border border-gray-300 px-2 py-2 w-64 truncate">
+                    <td className="border border-gray-300 px-2 py-2 w-64 truncate">
                       {isEditing ? (
                         <input
                           value={editedRow![4] || ""}
-                          onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 4), e.target.value, ...prev.slice(5)] : null)}
+                          onChange={
+                            e => setEditedRow(prev =>
+                              prev ? [
+                                ...prev.slice(0, 4),
+                                e.target.value.replace(/,/g, ";").trim(),
+                                ...prev.slice(5)
+                              ] : null
+                            )
+                          }
                           className="w-full border px-1 py-1 rounded"
                         />
                       ) : (
@@ -230,37 +238,37 @@ const Watchlist = () => {
                     {/* Actions */}
                     <td className="border border-gray-300 px-2 py-2 w-32">
                       <div className="flex gap-1">
-                      {isEditing ? (
-                        <>
-                          <button
-                            onClick={() => saveEditing(index)}
-                            className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition text-xs"
-                          >
-                            Done
-                          </button>
-                          <button
-                            onClick={cancelEditing}
-                            className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400 transition text-xs"
-                          >
-                            Cancel
-                          </button>
-                        </>
-                      ) : (
-                        <>
-                          <button
-                            onClick={() => startEditingRow(index)}
-                            className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition text-xs"
-                          >
-                            Edit
-                          </button>
-                          <button
-                            onClick={() => setRowToRemove(index)}
-                            className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition text-xs"
-                          >
-                            Remove
-                          </button>
-                        </>
-                      )}
+                        {isEditing ? (
+                          <>
+                            <button
+                              onClick={() => saveEditing(index)}
+                              className="bg-green-500 text-white px-2 py-1 rounded hover:bg-green-600 transition text-xs"
+                            >
+                              Done
+                            </button>
+                            <button
+                              onClick={cancelEditing}
+                              className="bg-gray-300 px-2 py-1 rounded hover:bg-gray-400 transition text-xs"
+                            >
+                              Cancel
+                            </button>
+                          </>
+                        ) : (
+                          <>
+                            <button
+                              onClick={() => startEditingRow(index)}
+                              className="bg-blue-500 text-white px-2 py-1 rounded hover:bg-blue-600 transition text-xs"
+                            >
+                              Edit
+                            </button>
+                            <button
+                              onClick={() => setRowToRemove(index)}
+                              className="bg-red-500 text-white px-2 py-1 rounded hover:bg-red-600 transition text-xs"
+                            >
+                              Remove
+                            </button>
+                          </>
+                        )}
                       </div>
                     </td>
                   </tr>
