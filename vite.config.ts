@@ -17,8 +17,8 @@ export default defineConfig({
     cssCodeSplit:true,
     rollupOptions: {
       input: {
-        popup: resolve(__dirname, 'src/popup/index.tsx'), // entry for popup React app
-        // panel: resolve(__dirname, 'src/panel/index.tsx'), // entry for popup React 
+        popup: resolve(__dirname, 'src/popup/index.tsx'), // entry for popup React app 
+        options: resolve(__dirname, 'src/options/index.tsx'),
       },
       output: {
         entryFileNames: '[name].js',       // fixed JS filename for manifest

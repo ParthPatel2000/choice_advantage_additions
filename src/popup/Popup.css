@@ -3,7 +3,6 @@
   @apply min-w-80 w-auto p-4 bg-gray-50 font-sans rounded-xl shadow-lg;
 }
 
-
 .title {
   @apply text-lg font-semibold text-gray-900 mb-4;
 }

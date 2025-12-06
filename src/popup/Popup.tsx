@@ -1,4 +1,4 @@
-import React, { useState} from 'react';
+import React, { useState } from 'react';
 import './Popup.css'
 import Dnrcontrols from '../Dnrcontrols/Dnrcontrols';
 import EditableDeposits from '../EditableDeposits/EditableDeposits';
@@ -6,7 +6,7 @@ import EditableDeposits from '../EditableDeposits/EditableDeposits';
 
 const Popup: React.FC = () => {
   const [showMain, setShowMain] = useState(true);
-  
+
   const injectScript = (fileName: string) => {
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       const tabId = tabs[0].id!;
@@ -14,10 +14,10 @@ const Popup: React.FC = () => {
       });
     });
   };
-  
+
   const sendMessage = (action: string) => chrome.runtime.sendMessage({ action });
-  
-  
+
+
   // const [logs, setLogs] = useState<string>('');
   // const log = (msg: string) => setLogs(prev => prev + msg + '\n');
 
@@ -68,35 +68,59 @@ const Popup: React.FC = () => {
 
       {showMain ? (
         <>
-          <h3 className="title flex-1 truncate">Choice Advantage Additions</h3>
+          <div className='btn-group flex items-center gap-2'>
+            <h3 className="title flex-grow flex-shrink truncate">
+              Choice Advantage Additions
+            </h3>
+            <button
+              className='mb-4 btn-blue rounded-full  text-lg flex items-center justify-center'
+              onClick={() => chrome.runtime.openOptionsPage()}
+              title='Settings'
+            >
+              ⚙
+            </button>
+          </div>
+
+
+
           <div className="btn-group">
-            <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}>
+            <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}
+              title="Run Scrape and refund depost Automation.">
               Scrape Bot
             </button>
-            <button className="btn btn-green" onClick={() => sendMessage('start_fill_bot')}>
+            <button className="btn btn-green" onClick={() => sendMessage('start_fill_bot')}
+              title="Run Fill Bot Automation">
               Fill Bot
             </button>
           </div>
 
           <EditableDeposits sendMessage={(action) => chrome.runtime.sendMessage({ action })} />
           <div className="btn-group">
-            <button className="btn btn-orange" onClick={() => sendMessage('ADD_CASH_DEP_FOLIO')}>
+            <button className="btn btn-orange" onClick={() => sendMessage('ADD_CASH_DEP_FOLIO')}
+              title="Add a blank cash dep folio">
               Add CASH DEP FOLIO
             </button>
-            <button className="btn btn-red" onClick={() => sendMessage('POST_GUEST_REFUND_BUTTON')}>
+            <button className="btn btn-red" onClick={() => sendMessage('POST_GUEST_REFUND_BUTTON')}
+              title="Run cash dep refund automation.">
               GUEST REFUND
             </button>
           </div>
 
           <div className="btn-group">
-            <button className="btn btn-indigo" onClick={() => injectScript('scripts/scrapeDetails.js')}>
+            <button className="btn btn-indigo" onClick={() => injectScript('scripts/scrapeDetails.js')}
+              title="scrape guest details and save in local storage"
+            >
               Scrape Guest Info
             </button>
-            <button className="btn btn-teal" onClick={() => injectScript('scripts/fillDetails.js')}>
+            <button
+              className="btn btn-teal"
+              onClick={() => injectScript('scripts/fillDetails.js')}
+              title="fill in guest details from the local storage">
               Fill Guest Info
             </button>
           </div>
-          <button className='btn-dark' onClick={() => setShowMain(false)}>
+          <button className='btn-dark' onClick={() => setShowMain(false)}
+            title="Click to open and configure dnr watchlist">
             DNR/WatchList controls
           </button>
 

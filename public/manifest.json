@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Choice Arrivals Details Transfer",
   "description": "Manual tool to run arrivals/transfer scripts only when triggered.",
-  "version": "1.0.1",
+  "version": "1.0.3",
   "permissions": [
     "scripting",
     "activeTab",
@@ -28,6 +28,10 @@
     "128": "icons/icon-128.png",
     "256": "icons/icon-256.png",
     "512": "icons/icon-512.png"
+  },
+  "options_ui": {
+    "page": "options.html",
+    "open_in_tab": true
   },
   "content_scripts": [
     {

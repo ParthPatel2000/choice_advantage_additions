@@ -1,9 +1,9 @@
 @import "tailwindcss";
 
 .deposit-group {
-  display: flex;
   @apply flex gap-2 mb-3;
-  gap: 4px;
+  display: flex;
+  /* gap: 4px; */ 
   flex-wrap: wrap;
   padding: auto;
   align-items: center;
