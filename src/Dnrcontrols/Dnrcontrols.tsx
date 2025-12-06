@@ -149,7 +149,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.first ? "Required" : "First Name*"}
               value={manualFirstName}
               onChange={e => {
-                setManualFirstName(e.target.value.replace(/,/g, ";").trim());
+                setManualFirstName(e.target.value.replace(/,/g, ";"));
                 if (errors.first) setErrors(prev => ({ ...prev, first: false }));
               }}
               onFocus={() => {
@@ -163,7 +163,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.last ? "Required" : "Last Name*"}
               value={manualLastName}
               onChange={e => {
-                setManualLastName(e.target.value.replace(/,/g, ";").trim());
+                setManualLastName(e.target.value.replace(/,/g, ";"));
                 if (errors.last) setErrors(prev => ({ ...prev, last: false }));
               }}
               onFocus={() => {
@@ -177,7 +177,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.list ? "Required" : "DNR/local/trouble/*"}
               value={manualList}
               onChange={e => {
-                setManualList(e.target.value.replace(/,/g, ";").trim());
+                setManualList(e.target.value.replace(/,/g, ";"));
                 if (errors.list) setErrors(prev => ({ ...prev, list: false }));
               }}
               onFocus={() => {
@@ -191,7 +191,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               type="text"
               placeholder="Reason/Notes"
               value={manualReason}
-              onChange={e => setManualReason(e.target.value.replace(/,/g, ";").trim())}
+              onChange={e => setManualReason(e.target.value.replace(/,/g, ";"))}
               className="border p-2 rounded"
             />
 
