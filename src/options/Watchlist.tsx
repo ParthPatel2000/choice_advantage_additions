@@ -1,4 +1,7 @@
 import { useState, useEffect } from "react";
+import { importCsv } from "../utils/importCSV";
+import { exportCsv } from "../utils/exportCSV";
+
 
 type DnrRow = string[];
 
@@ -23,6 +26,21 @@ const Watchlist = () => {
   useEffect(() => {
     chrome.storage.local.set({ dnrList });
   }, [dnrList]);
+
+  // CSV Upload
+  const handleCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (!file) return;
+
+    const parsed = await importCsv(file);
+
+    setDnrList(prev => {
+      const combined = [...prev, ...parsed];
+      const unique: DnrRow[] = Array.from(new Map(combined.map(r => [r.join(","), r])).values());
+      chrome.storage.local.set({ dnrList: unique });
+      return unique;
+    });
+  };
 
   const startEditingRow = (index: number) => {
     setEditingRowIndex(index);
@@ -68,17 +86,77 @@ const Watchlist = () => {
   };
 
   return (
+
     <div className="p-4 min-h-screen bg-gray-50">
-      <div className="flex items-center justify-between mb-4">
-        <h1 className="text-2xl font-bold">DNR Watchlist</h1>
+      {/* CSV Upload
+      <div className="flex gap-3">
+        <input
+          id="csvInput"
+          type="file"
+          accept=".csv"
+          onChange={handleCSV}
+          className="hidden"
+        />
+
         <button
-          onClick={() => setShowConfirmClear(true)}
-          className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition"
-          title="Clear the cached list, will stop all the watchlist alerts!!"
+          onClick={() => document.getElementById("csvInput")?.click()}
+          className="flex-1 bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 transition"
+          title="Import as many csv as you want, format: firstname,lastname,List,severity,reason"
         >
-          Clear List
+          Import CSV
         </button>
+
+        <button
+          onClick={() => exportCsv(dnrList, "dnr_list_backup.csv")}
+          className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
+          title="Click to download the existing watch list for safekeeping."
+        >
+          Export CSV
+        </button>
+      </div> */}
+
+      <div className="flex items-center justify-between mb-4">
+        {/* Title */}
+        <h1 className="text-2xl font-bold">DNR Watchlist</h1>
+
+        {/* Buttons group */}
+        <div className="flex gap-2">
+          {/* CSV Import */}
+          <input
+            id="csvInput"
+            type="file"
+            accept=".csv"
+            onChange={handleCSV}
+            className="hidden"
+          />
+          <button
+            onClick={() => document.getElementById("csvInput")?.click()}
+            className="bg-gray-700 text-white py-1 px-3 rounded hover:bg-gray-800 transition text-sm"
+            title="Import as many CSVs as you want, format: firstname,lastname,List,severity,reason"
+          >
+            Import CSV
+          </button>
+
+          {/* CSV Export */}
+          <button
+            onClick={() => exportCsv(dnrList, "dnr_list_backup.csv")}
+            className="bg-green-500 text-white py-1 px-3 rounded hover:bg-green-600 transition text-sm"
+            title="Download the existing watch list for safekeeping"
+          >
+            Export CSV
+          </button>
+
+          {/* Clear List */}
+          <button
+            onClick={() => setShowConfirmClear(true)}
+            className="bg-red-500 text-white py-1 px-3 rounded hover:bg-red-600 transition text-sm"
+            title="Clear the cached list, will stop all the watchlist alerts!!"
+          >
+            Clear List
+          </button>
+        </div>
       </div>
+
 
       {showConfirmClear && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">

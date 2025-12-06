@@ -1,8 +1,5 @@
 // export default Dnrcontrols;
 import React, { useState, useEffect } from "react";
-import { importCsv } from "../utils/importCSV";
-import { exportCsv } from "../utils/exportCSV";
-
 type DnrRow = string[];
 
 // Dnrcontrols.tsx
@@ -75,20 +72,6 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
     });
   };
 
-  // CSV Upload
-  const handleCSV = async (e: React.ChangeEvent<HTMLInputElement>) => {
-    const file = e.target.files?.[0];
-    if (!file) return;
-
-    const parsed = await importCsv(file);
-
-    setDnrList(prev => {
-      const combined = [...prev, ...parsed];
-      const unique: DnrRow[] = Array.from(new Map(combined.map(r => [r.join(","), r])).values());
-      chrome.storage.local.set({ dnrList: unique });
-      return unique;
-    });
-  };
 
   // -------------------------
   // PREFILL CURRENT GUEST
@@ -139,40 +122,11 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
           {/* Centered title */}
           <h2
             className="text-[16px] font-semibold absolute left-1/2 transform -translate-x-1/2">
-            Watchlist Controls
+            Watchlist Form
           </h2>
 
           {/* Right: optional space to balance layout */}
           <div className="w-20"></div>
-        </div>
-
-
-
-        {/* CSV Upload */}
-        <div className="flex gap-3">
-          <input
-            id="csvInput"
-            type="file"
-            accept=".csv"
-            onChange={handleCSV}
-            className="hidden"
-          />
-
-          <button
-            onClick={() => document.getElementById("csvInput")?.click()}
-            className="flex-1 bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 transition"
-            title="Import as many csv as you want, format: firstname,lastname,List,severity,reason"
-          >
-            Import CSV
-          </button>
-
-          <button
-            onClick={() => exportCsv(dnrList, "dnr_list_backup.csv")}
-            className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
-            title="Click to download the existing watch list for safekeeping."
-          >
-            Export CSV
-          </button>
         </div>
 
         {/* Manual Add Form */}
@@ -273,6 +227,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
           <button
             onClick={() => window.open(chrome.runtime.getURL("options.html#/watchlist"))}
             className="bg-blue-500 text-white py-1 px-3 rounded hover:bg-blue-600 transition"
+            title="Click to open the Watch list."
           >
             View/Edit List
           </button>

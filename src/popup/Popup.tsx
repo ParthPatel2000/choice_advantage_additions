@@ -85,8 +85,8 @@ const Popup: React.FC = () => {
 
           <div className="btn-group">
             <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}
-              title="Run Scrape and refund depost Automation.">
-              Scrape Bot
+              title="Run Copy guest info and refund depost Automation.">
+              Copy and refund Bot
             </button>
             <button className="btn btn-green" onClick={() => sendMessage('start_fill_bot')}
               title="Run Fill Bot Automation">
@@ -110,7 +110,7 @@ const Popup: React.FC = () => {
             <button className="btn btn-indigo" onClick={() => injectScript('scripts/scrapeDetails.js')}
               title="scrape guest details and save in local storage"
             >
-              Scrape Guest Info
+              Copy Guest Info
             </button>
             <button
               className="btn btn-teal"
