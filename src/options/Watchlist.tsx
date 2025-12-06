@@ -55,7 +55,7 @@ const Watchlist = () => {
   const saveEditing = (index: number) => {
     if (!editedRow) return;
 
-    const cleaned = editedRow.map((cell, i) =>
+    const cleaned = editedRow.map((cell) =>
       (cell || "").replace(/,/g, ";").trim()
     );
 
@@ -193,7 +193,7 @@ const Watchlist = () => {
       )}
 
 
-      {dnrList.length <= 1 ? (
+      {dnrList.length < 1 ? (
         <div className="text-sm text-gray-600">No entries.</div>
       ) : (
         <div className="max-h-[75vh] overflow-y-auto overflow-x-hidden border border-gray-300 rounded hide-scrollbar">
@@ -210,8 +210,8 @@ const Watchlist = () => {
               </tr>
             </thead>
             <tbody>
-              {dnrList.slice(1).map((row, i) => {
-                const index = i + 1;
+              {dnrList.map((row, i) => {
+                const index = i;
                 const isEditing = editingRowIndex === index;
                 return (
                   <tr key={index} className={`${getRowColor(row[3])} transition`}>

@@ -9,7 +9,7 @@ export async function checkArrivalsAgainstLists(arrivals) {
   const { dnrList } = await chrome.storage.local.get("dnrList");
   const list = dnrList || [];
 
-  if (list.length <= 1) {
+  if (list.length < 1) {
     console.log("⚠ DNR list is empty or only contains headers");
     return [];
   }
@@ -18,7 +18,7 @@ export async function checkArrivalsAgainstLists(arrivals) {
   console.log("🔍 Checking arrivals against lists...");
 
   // Skip header row
-  const dataRows = list.slice(1);
+  const dataRows = list;
 
   arrivals.forEach(arrival => {
     console.log(`🔍 Checking ${arrival.last_name}, ${arrival.first_name}...`);
