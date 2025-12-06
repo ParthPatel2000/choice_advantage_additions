@@ -1,7 +1,7 @@
 {
   "manifest_version": 3,
-  "name": "Choice Arrivals Details Transfer",
-  "description": "Manual tool to run arrivals/transfer scripts only when triggered.",
+  "name": "Choice Advantage Additions",
+  "description": "Add DNR/Watch list to choice Advantage.",
   "version": "1.0.3",
   "permissions": [
     "scripting",
@@ -15,7 +15,7 @@
   ],
   "action": {
     "default_popup": "popup.html",
-    "default_title": "Choice Arrivals Transfer"
+    "default_title": "Advantage Additons"
   },
   "background": {
     "service_worker": "background.js",
