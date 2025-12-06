@@ -54,9 +54,14 @@ const Watchlist = () => {
 
   const saveEditing = (index: number) => {
     if (!editedRow) return;
+
+    const cleaned = editedRow.map((cell, i) =>
+      (cell || "").replace(/,/g, ";").trim()
+    );
+
     setDnrList(prev => {
       const updated = [...prev];
-      updated[index] = editedRow;
+      updated[index] = cleaned;
       chrome.storage.local.set({ dnrList: updated });
       return updated;
     });
@@ -88,33 +93,6 @@ const Watchlist = () => {
   return (
 
     <div className="p-4 min-h-screen bg-gray-50">
-      {/* CSV Upload
-      <div className="flex gap-3">
-        <input
-          id="csvInput"
-          type="file"
-          accept=".csv"
-          onChange={handleCSV}
-          className="hidden"
-        />
-
-        <button
-          onClick={() => document.getElementById("csvInput")?.click()}
-          className="flex-1 bg-gray-700 text-white py-2 px-4 rounded hover:bg-gray-800 transition"
-          title="Import as many csv as you want, format: firstname,lastname,List,severity,reason"
-        >
-          Import CSV
-        </button>
-
-        <button
-          onClick={() => exportCsv(dnrList, "dnr_list_backup.csv")}
-          className="flex-1 bg-green-500 text-white py-2 px-4 rounded hover:bg-green-600 transition"
-          title="Click to download the existing watch list for safekeeping."
-        >
-          Export CSV
-        </button>
-      </div> */}
-
       <div className="flex items-center justify-between mb-4">
         {/* Title */}
         <h1 className="text-2xl font-bold">DNR Watchlist</h1>
@@ -244,12 +222,12 @@ const Watchlist = () => {
                           <>
                             <input
                               value={editedRow![0]}
-                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(1)] : null)}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value.replace(/,/g, ";"), ...prev.slice(1)] : null)}
                               className="w-full border px-1 py-1 rounded mb-1"
                             />
                             <input
                               value={editedRow![1]}
-                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(2)] : null)}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value.replace(/,/g, ";"), ...prev.slice(2)] : null)}
                               className="w-full border px-1 py-1 rounded text-xs text-gray-600"
                             />
                           </>
@@ -271,7 +249,7 @@ const Watchlist = () => {
                             e => setEditedRow(prev =>
                               prev ? [
                                 ...prev.slice(0, 4),
-                                e.target.value.replace(/,/g, ";").trim(),
+                                e.target.value.replace(/,/g, ";"),
                                 ...prev.slice(5)
                               ] : null
                             )
@@ -288,7 +266,7 @@ const Watchlist = () => {
                       {isEditing ? (
                         <input
                           value={editedRow![2]}
-                          onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 2), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(3)] : null)}
+                          onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 2), e.target.value.replace(/,/g, ";"), ...prev.slice(3)] : null)}
                           className="w-full border px-1 py-1 rounded"
                         />
                       ) : (
