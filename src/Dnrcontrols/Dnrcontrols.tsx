@@ -100,8 +100,8 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
       if (msg.type === "GUEST_INFO_DATA" && msg.payload) {
         const guest = msg.payload;
 
-        setManualFirstName(guest.firstName || "");
-        setManualLastName(guest.lastName || "");
+        setManualFirstName(guest.firstName.replace(/,/g, ";").trim() || "");
+        setManualLastName(guest.lastName.replace(/,/g, ";").trim() || "");
         setManualList("");
         setManualReason("");
         setManualSeverity("info");
@@ -195,7 +195,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.first ? "Required" : "First Name*"}
               value={manualFirstName}
               onChange={e => {
-                setManualFirstName(e.target.value);
+                setManualFirstName(e.target.value.replace(/,/g, ";").trim());
                 if (errors.first) setErrors(prev => ({ ...prev, first: false }));
               }}
               onFocus={() => {
@@ -209,7 +209,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.last ? "Required" : "Last Name*"}
               value={manualLastName}
               onChange={e => {
-                setManualLastName(e.target.value);
+                setManualLastName(e.target.value.replace(/,/g, ";").trim());
                 if (errors.last) setErrors(prev => ({ ...prev, last: false }));
               }}
               onFocus={() => {
@@ -223,7 +223,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               placeholder={errors.list ? "Required" : "DNR/local/trouble/*"}
               value={manualList}
               onChange={e => {
-                setManualList(e.target.value);
+                setManualList(e.target.value.replace(/,/g, ";").trim());
                 if (errors.list) setErrors(prev => ({ ...prev, list: false }));
               }}
               onFocus={() => {
@@ -237,7 +237,7 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
               type="text"
               placeholder="Reason/Notes"
               value={manualReason}
-              onChange={e => setManualReason(e.target.value)}
+              onChange={e => setManualReason(e.target.value.replace(/,/g, ";").trim())}
               className="border p-2 rounded"
             />
 

@@ -166,12 +166,12 @@ const Watchlist = () => {
                           <>
                             <input
                               value={editedRow![0]}
-                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value, ...prev.slice(1)] : null)}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 0), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(1)] : null)}
                               className="w-full border px-1 py-1 rounded mb-1"
                             />
                             <input
                               value={editedRow![1]}
-                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value, ...prev.slice(2)] : null)}
+                              onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 1), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(2)] : null)}
                               className="w-full border px-1 py-1 rounded text-xs text-gray-600"
                             />
                           </>
@@ -210,7 +210,7 @@ const Watchlist = () => {
                       {isEditing ? (
                         <input
                           value={editedRow![2]}
-                          onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 2), e.target.value, ...prev.slice(3)] : null)}
+                          onChange={e => setEditedRow(prev => prev ? [...prev.slice(0, 2), e.target.value.replace(/,/g, ";").trim(), ...prev.slice(3)] : null)}
                           className="w-full border px-1 py-1 rounded"
                         />
                       ) : (
