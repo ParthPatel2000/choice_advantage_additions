@@ -6,42 +6,49 @@
 export async function checkArrivalsAgainstLists(arrivals) {
   console.log("🔍 Fetching DNR and ratePlans list from chrome.storage.local...");
 
-  let { dnrList = [], ratePlans } = await chrome.storage.local.get(["dnrList", "ratePlans"]);
+  let { dnrList = [], ratePlans, ratePlansCheckFlag } = await chrome.storage.local.get(["dnrList", "ratePlans", "ratePlansCheckFlag"]);
 
   if (dnrList.length < 1) {
     console.log("⚠ DNR list is empty");
   }
 
   if (!ratePlans) {
-    ratePlans = [];
+    ratePlans = ["SCPM"];
     await chrome.storage.local.set({ ratePlans });
+  }
+
+  if (!ratePlansCheckFlag) {
+    ratePlansCheckFlag = false;
+    await chrome.storage.local.set({ ratePlansCheckFlag });
   }
 
   const matches = [];
   console.log("🔍 Checking arrivals against lists...");
 
   arrivals.forEach(arrival => {
-    console.log(`🔍 Checking ${arrival.last_name}, ${arrival.first_name}...`);
+    console.log(`🔍 Checking ${arrival.last_name}, ${arrival.first_name}, ${arrival.rate_plan} ...`);
 
     let matchTypes = [];
     let match;
+
+    if (ratePlansCheckFlag && !ratePlans.includes(arrival.rate_plan)) {
+      console.log(`${arrival.rate_plan} not allowed!!!!`)
+      match = {
+        last_name: arrival.last_name,
+        first_name: arrival.first_name,
+        reservationNumber: arrival.reservationNumber,
+        unknown_rate_plan: arrival.rate_plan,
+        level: "medium"
+      };
+      matchTypes.push("RATE_PLAN")
+    }
+
     if (dnrList.length > 0) {
       const DNRRow = dnrList.find(
         row =>
           row[1].toUpperCase() === arrival.last_name.toUpperCase() &&
           row[0].toUpperCase() === arrival.first_name.toUpperCase()
       );
-
-      if (!ratePlans.includes(arrival.rate_plan)) {
-        match = {
-          last_name: arrival.last_name,
-          first_name: arrival.first_name,
-          reservationNumber: arrival.reservationNumber,
-          unknown_rate_plan: arrival.rate_plan,
-          level: "medium"
-        };
-        matchTypes.push("RATE_PLAN")
-      }
 
       if (DNRRow) {
         match = {
