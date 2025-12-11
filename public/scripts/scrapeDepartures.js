@@ -52,6 +52,8 @@
                 const link = row.querySelector("td[id^='guestNameCell'] a[id^='guestName']");
                 if (!link) return;
 
+                const room = row.querySelector('p[id^="guestRoomNumber"]')?.textContent.trim() || "";
+                
                 // Extract reservation number from onclick="xxx('123456')"
                 const reservationNumber =
                     link.getAttribute("onclick")?.match(/'(\d+)'/)?.[1] || null;
@@ -64,6 +66,7 @@
                     raw_name: link.textContent.trim(),
                     last_name: parsed.last_name,
                     first_name: parsed.first_name,
+                    room,
                     reservationNumber
                 });
             });
