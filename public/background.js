@@ -363,7 +363,7 @@ async function computeStayovers() {
   const departureMap = new Map();
   departures.forEach(dep => {
     const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
-    departureMap.set(key, true);
+    departureMap.set(key, dep.room);
   });
 
   // Build stayover list
@@ -373,7 +373,8 @@ async function computeStayovers() {
     if (departureMap.has(key)) {
       stayovers.push({
         first_name: arr.first_name,
-        last_name: arr.last_name
+        last_name: arr.last_name,
+        room: departureMap.get(key),
       });
     }
   });

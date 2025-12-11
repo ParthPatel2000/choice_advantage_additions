@@ -66,7 +66,7 @@ function injectStayoverDiv() {
 
     stayoversCache.forEach(s => {
       const child = document.createElement("div");
-      child.innerText = `${s.last_name} ${s.first_name} - Follow Up Reservation`;
+      child.innerText = `${s.last_name} ${s.first_name} (${s.room}) - Follow Up Reservation`;
       Object.assign(child.style, {
         width: "100%",
         marginBottom: "4px",
