@@ -30,9 +30,9 @@ export default function Rateplans() {
         });
     }
 
-    const hanleRemove = (index: Number) => {
+    const handleRemove = (index: Number) => {
         setRatePlansList((prev) => {
-            const updatedList = prev.filter((val, i) => i !== index)
+            const updatedList = prev.filter((_, i) => i !== index)
             chrome.storage.local.set({ ratePlans: updatedList });
             return updatedList;
         });
@@ -43,7 +43,7 @@ export default function Rateplans() {
     return <>
         <div id="RateplansDiv" className="main-content">
             <p className="text-gray-700 mb-4">Rate Plan monitoring options:</p>
-            <div className="flex items-center gap-3">
+            <div className="flex items-center gap-3 p-1">
 
                 <span className="text-gray-800 font-medium">Rate Plans whitelist</span>
                 <button
@@ -55,28 +55,46 @@ export default function Rateplans() {
                 </button>
             </div>
 
-            <div>
-                <span>Rate Plans:</span>
+            <div className="border py-2 px-3 w-[280px] r border-gray-300 rounded-md mb-2">
                 {
-                    ratePlansList.map((Rateplan, index) => {
-                        return <div key={index}>{index + 1} : {Rateplan}
-                            <button onClick={(index) => { hanleRemove(index) }}></button>
-                        </div>
+                    ratePlansList.length > 0 ? (ratePlansList.map((Rateplan, index) => {
+                        <span className="py-2">Allowed Rate Plans:</span>
+                        return (
+                            <div
+                                key={index}
+                                className="flex items-center justify-between w-full px-3 py-1 border border-gray-300 rounded-md mb-2"
+                            >
+                                <span className="truncate">{index + 1} : {Rateplan}</span>
+                                <button
+                                    className="bg-red-500 text-white py-0.5 px-2 rounded hover:bg-red-600 transition text-sm"
+                                    onClick={() => handleRemove(index)}
+                                >
+                                    Remove
+                                </button>
+                            </div>
+                        );
                     })
+                    ) :
+                        ( <span className="py-2">No Allowed Rate Plans.</span>)
                 }
 
-                <input
-                    type="text"
-                    value={newRatePlan}
-                    onChange={(e) => setNewRatePlan(e.target.value.toUpperCase().trim())}
-                    className="border p-1 rounded"
-                    placeholder="Add a new Rate Plan..."
 
-                />
-                <button
-                    onClick={() => { handleAdd(newRatePlan) }}
-                    className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
-                >Add </button>
+
+
+                <div className="flex items-center gap-1">
+                    <input
+                        type="text"
+                        value={newRatePlan}
+                        onChange={(e) => setNewRatePlan(e.target.value.toUpperCase().trim())}
+                        className="border p-1 rounded flex-grow"
+                        placeholder="Add a new Rate Plan..."
+
+                    />
+                    <button
+                        onClick={() => { handleAdd(newRatePlan) }}
+                        className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
+                    >Add </button>
+                </div>
             </div>
         </div >
     </>
