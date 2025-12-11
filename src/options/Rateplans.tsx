@@ -30,6 +30,14 @@ export default function Rateplans() {
         });
     }
 
+    const hanleRemove = (index: Number) => {
+        setRatePlansList((prev) => {
+            const updatedList = prev.filter((val, i) => i !== index)
+            chrome.storage.local.set({ ratePlans: updatedList });
+            return updatedList;
+        });
+    }
+
 
 
     return <>
@@ -51,7 +59,9 @@ export default function Rateplans() {
                 <span>Rate Plans:</span>
                 {
                     ratePlansList.map((Rateplan, index) => {
-                        return <div key={index}>{index + 1} : {Rateplan}</div>
+                        return <div key={index}>{index + 1} : {Rateplan}
+                            <button onClick={(index) => { hanleRemove(index) }}></button>
+                        </div>
                     })
                 }
 
@@ -68,6 +78,6 @@ export default function Rateplans() {
                     className="ml-2 bg-blue-500 text-white px-3 py-1 rounded"
                 >Add </button>
             </div>
-        </div>
+        </div >
     </>
 }
