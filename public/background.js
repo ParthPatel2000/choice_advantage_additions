@@ -52,7 +52,9 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         const alerts = matches
           .map((match) => {
             return {
-              text: `${match.last_name}, ${match.first_name} is on ${match.list || "DNR"} list.`,
+              text: `${match.last_name}, ${match.first_name}` +
+                `${match.list ? `\nis on ${match.list} list.` : ""}` +
+                `${match.unknown_rate_plan ? `\n${match.unknown_rate_plan} - not allowed.` : ""} `,
               level: match.level
             }
           });
@@ -278,7 +280,7 @@ function handleDepositSlot(slotIndex) {
     const cashDepValue = depositButtons[slotIndex] ?? "0";
     guestInfoCache["cashDep"] = cashDepValue;
 
-    console.log(`Using cash deposit value for Slot ${slotIndex}:`, guestInfoCache["cashDep"]);
+    console.log(`Using cash deposit value for Slot ${slotIndex}: `, guestInfoCache["cashDep"]);
 
     chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
       currentTabId = tabs[0].id;
@@ -369,7 +371,7 @@ async function computeStayovers() {
   // Build stayover list
   const stayovers = [];
   arrivals.forEach(arr => {
-    const key = `${normalize(arr.last_name)}|${normalize(arr.first_name)}`;
+    const key = `${normalize(arr.last_name)}| ${normalize(arr.first_name)} `;
     if (departureMap.has(key)) {
       stayovers.push({
         first_name: arr.first_name,

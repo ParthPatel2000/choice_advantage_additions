@@ -22,9 +22,12 @@ function injectStayoverDiv() {
     // Base glassmorphic styles
     Object.assign(div.style, {
       position: "fixed",
-      bottom: "150px", // adjust if you want it above the main panel
-      right: "20px",
+      bottom: "20px", 
+      right: "210px",
       width: "220px",
+      minHeight: "auto",
+      maxHeight: "70vh",
+      overflowY: "auto",
       zIndex: "999999",
       borderRadius: "12px",
       background: "rgba(255, 255, 255, 0.18)",
@@ -142,7 +145,9 @@ function injectFloatingDiv() {
       bottom: "20px",
       right: "20px",
       width: "220px",
-      height: "110px",
+      minHeight: "auto",
+      maxHeight: "70vh",
+      overflowY: "auto",
       zIndex: "999999",
       borderRadius: "12px",
       background: "rgba(255, 255, 255, 0.18)",
