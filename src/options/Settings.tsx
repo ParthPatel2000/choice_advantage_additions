@@ -27,8 +27,8 @@ export default function Settings() {
 
   return (
     <>
-      <div className="p-4">
-        <h1 className="text-2xl font-bold mb-4">Extension Settings</h1>
+      <h1 className="text-2xl font-bold mb-4">Extension Settings</h1>
+      <div className="main-content">
         <p className="text-gray-700 mb-4">Enable or disable experimental features:</p>
 
         <div className="flex items-center gap-3">

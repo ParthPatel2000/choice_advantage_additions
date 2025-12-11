@@ -33,8 +33,10 @@ export default function Rateplans() {
 
 
     return <>
-        <div id="RateplansDiv" className="p-4">
+        <div id="RateplansDiv" className="main-content">
+            <p className="text-gray-700 mb-4">Rate Plan monitoring options:</p>
             <div className="flex items-center gap-3">
+
                 <span className="text-gray-800 font-medium">Rate Plans whitelist</span>
                 <button
                     onClick={() => { toggleRatePlanCheck() }}
