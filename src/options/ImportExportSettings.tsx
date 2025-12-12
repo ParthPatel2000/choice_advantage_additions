@@ -1,4 +1,6 @@
+import { useRef } from "react";
 export default function ImportExportSettings() {
+    const fileInputRef = useRef<HTMLInputElement | null>(null);
 
     const handleExport = () => {
         chrome.storage.local.get([
@@ -35,16 +37,66 @@ export default function ImportExportSettings() {
             });
     }
 
+    const handleImportClick = () => {
+        fileInputRef.current?.click();   // open file chooser
+    };
+
+    const handleImport = async (e: React.ChangeEvent<HTMLInputElement>) => {
+
+        const file = e.target.files?.[0];
+        if (!file) return;
+
+        const text = await file.text();
+
+        let imported: any;
+        try {
+            imported = JSON.parse(text);
+        }
+        catch {
+            console.log("invalid JSON File.");
+            return;
+        }
+
+        const settings = {
+            depositButtons: imported.depositButtons ?? [60, 100],
+            leisureGuestScriptFlag: imported.leisureGuestScriptFlag ?? false,
+            ratePlans: imported.ratePlans ?? [],
+            ratePlansCheckFlag: imported.ratePlansCheckFlag ?? false,
+            visibilityArray: imported.visibilityArray ?? [false, false, false, false],
+            dnrList: imported.dnrList ?? []
+        };
+
+        chrome.storage.local.set(settings);
+        console.log("Settings Imported form JSON.")
+        window.location.reload();
+        return;
+    }
+
     return <>
         <div className="main-content">
-            <div className="flex">
+            <div className="flex gap-2">
                 <button
-                    className="bg-blue-700"
+                    className="bg-blue-500 py-1 px-3 hover:bg-blue-600 text rounded text-white"
                     onClick={() => { handleExport() }}
                 >
-                    export
+                    Export settings
+                </button>
+
+                <button
+                    className="bg-green-500 py-1 px-3 hover:bg-green-600 text rounded text-white"
+                    onClick={() => { handleImportClick() }}
+                >
+                    Import settings
                 </button>
             </div >
+            <input
+                type="file"
+                accept=".json"
+                ref={fileInputRef}
+                style={{ display: "none" }}
+                onChange={handleImport}
+                hidden
+            />
         </div>
     </>
 }
