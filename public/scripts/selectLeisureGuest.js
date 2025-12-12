@@ -1,4 +1,10 @@
-(function selectLeisureOnce() {
+chrome.storage.local.get(["leisureGuestScriptFlag"]).then((res) => {
+    if (res.leisureGuestScriptFlag === true) {
+        selectLeisureOnce();
+    }
+});
+
+function selectLeisureOnce() {
     const waitForSelects = setInterval(() => {
         // Primary selectors
         let marketSegment = document.querySelector('select[name="marketSegment"]');
@@ -26,4 +32,4 @@
             console.log('Leisure options selected once.');
         }
     }, 200); // check every 200ms until found
-})();
+}

@@ -6,18 +6,18 @@ import EditableDeposits from '../EditableDeposits/EditableDeposits';
 
 const Popup: React.FC = () => {
   const [showMain, setShowMain] = useState(true);
-  const [showExperimental, setShowExperimental] = useState(false);
+  const [visibilityArray, setVisibilityArray] = useState<boolean[]>([]);
 
   useEffect(() => {
-    chrome.storage.local.get(["experimentalFeatures"], (result) => {
-      if (result.experimentalFeatures === undefined) {
-        chrome.storage.local.set({ experimentalFeatures: false });
-        setShowExperimental(false);
-      } else {
-        setShowExperimental(result.experimentalFeatures === true);
-      }
-    });
-  }, []);
+    chrome.storage.local.get(["visibilityArray"]).then(
+      (res) => {
+        const stored = res.visibilityArray ?? [false, false, false, false];
+        setVisibilityArray(stored as boolean[]);
+        if (res.visibilityArray === undefined) {
+          chrome.storage.local.set({ visibilityArray: stored });
+        }
+      })
+  }, [])
 
 
   const injectScript = (fileName: string) => {
@@ -96,47 +96,53 @@ const Popup: React.FC = () => {
             </button>
           </div>
 
-
-          {showExperimental &&
-            <div id="Experimental">
-              <div className="btn-group">
-                <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}
-                  title="Run Copy guest info and refund depost Automation.">
-                  Copy and refund Bot
-                </button>
-                <button className="btn btn-green" onClick={() => sendMessage('start_fill_bot')}
-                  title="Run Fill Bot Automation">
-                  Fill Bot
-                </button>
-              </div>
-
-              <EditableDeposits sendMessage={(action) => chrome.runtime.sendMessage({ action })} />
-              <div className="btn-group">
-                <button className="btn btn-orange" onClick={() => sendMessage('ADD_CASH_DEP_FOLIO')}
-                  title="Add a blank cash dep folio">
-                  Add CASH DEP FOLIO
-                </button>
-                <button className="btn btn-red" onClick={() => sendMessage('POST_GUEST_REFUND_BUTTON')}
-                  title="Run cash dep refund automation.">
-                  GUEST REFUND
-                </button>
-              </div>
-
-              <div className="btn-group">
-                <button className="btn btn-indigo" onClick={() => injectScript('scripts/scrapeDetails.js')}
-                  title="scrape guest details and save in local storage"
-                >
-                  Copy Guest Info
-                </button>
-                <button
-                  className="btn btn-teal"
-                  onClick={() => injectScript('scripts/fillDetails.js')}
-                  title="fill in guest details from the local storage">
-                  Fill Guest Info
-                </button>
-              </div>
+          {visibilityArray[0] && (
+            <div className="btn-group">
+              <button className="btn btn-blue" onClick={() => sendMessage('start_scrape_bot')}
+                title="Run Copy guest info and refund depost Automation.">
+                Copy and refund Bot
+              </button>
+              <button className="btn btn-green" onClick={() => sendMessage('start_fill_bot')}
+                title="Run Fill Bot Automation">
+                Fill Bot
+              </button>
             </div>
-          }
+          )}
+
+          {visibilityArray[1] && (
+            <EditableDeposits sendMessage={(action) => chrome.runtime.sendMessage({ action })} />
+          )}
+
+          {visibilityArray[2] && (
+            <div className="btn-group">
+              <button className="btn btn-orange" onClick={() => sendMessage('ADD_CASH_DEP_FOLIO')}
+                title="Add a blank cash dep folio">
+                Add CASH DEP FOLIO
+              </button>
+              <button className="btn btn-red" onClick={() => sendMessage('POST_GUEST_REFUND_BUTTON')}
+                title="Run cash dep refund automation.">
+                GUEST REFUND
+              </button>
+            </div>
+          )}
+
+          {visibilityArray[3] && (
+            <div className="btn-group">
+              <button className="btn btn-indigo" onClick={() => injectScript('scripts/scrapeDetails.js')}
+                title="scrape guest details and save in local storage"
+              >
+                Copy Guest Info
+              </button>
+              <button
+                className="btn btn-teal"
+                onClick={() => injectScript('scripts/fillDetails.js')}
+                title="fill in guest details from the local storage">
+                Fill Guest Info
+              </button>
+            </div>
+          )}
+
+
 
           <button className='btn-dark' onClick={() => setShowMain(false)}
             title="Click to open and configure dnr watchlist">
@@ -168,12 +174,13 @@ const Popup: React.FC = () => {
         </>
       ) : (
         <Dnrcontrols goHome={() => setShowMain(true)} />
-      )}
+      )
+      }
 
       <span className="absolute bottom-1 right-2 text-xs text-gray-400 select-none pointer-events-none">
         by Parth
       </span>
-    </div>
+    </div >
   );
 
 

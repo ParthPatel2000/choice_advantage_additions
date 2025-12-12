@@ -42,8 +42,8 @@ export default function Rateplans() {
 
     return <>
         <div id="RateplansDiv" className="main-content">
-            <p className="text-gray-700 mb-4">Rate Plan monitoring options:</p>
-            <div className="flex items-center gap-3 p-1">
+            <p className="text-gray-700 mb-4 font-bold ">Rate Plan monitoring options</p>
+            <div className="flex items-center gap-3 p-1 mb-2">
 
                 <span className="text-gray-800 font-medium">Rate Plans whitelist</span>
                 <button
@@ -54,7 +54,10 @@ export default function Rateplans() {
                     <span className="w-4 h-4 bg-white rounded-full shadow-md transform duration-300"></span>
                 </button>
             </div>
+            <p className="text-gray-500 mt-1 mb-1 px-1 py-0 text-sm">
+                Turning this on will start checking all of the arrivals with the below rate plans, if any reservation has a rate plan not listed below, it will alert you.<br />
 
+            </p>
             <div className="border py-2 px-3 w-[280px] r border-gray-300 rounded-md mb-2">
                 {
                     ratePlansList.length > 0 ? (ratePlansList.map((Rateplan, index) => {
@@ -62,9 +65,9 @@ export default function Rateplans() {
                         return (
                             <div
                                 key={index}
-                                className="flex items-center justify-between w-full px-3 py-1 border border-gray-300 rounded-md mb-2"
+                                className="flex items-center justify-between w-full px-3 py-1.5 border border-gray-300 rounded-md mb-2"
                             >
-                                <span className="truncate">{index + 1} : {Rateplan}</span>
+                                <span className="truncate">{Rateplan}</span>
                                 <button
                                     className="bg-red-500 text-white py-0.5 px-2 rounded hover:bg-red-600 transition text-sm"
                                     onClick={() => handleRemove(index)}
@@ -75,7 +78,7 @@ export default function Rateplans() {
                         );
                     })
                     ) :
-                        ( <span className="py-2">No Allowed Rate Plans.</span>)
+                        (<span className="px-3 py-1">No Allowed Rate Plans.</span>)
                 }
 
 
@@ -86,6 +89,12 @@ export default function Rateplans() {
                         type="text"
                         value={newRatePlan}
                         onChange={(e) => setNewRatePlan(e.target.value.toUpperCase().trim())}
+                        onKeyDown={(e) => {
+                            if (e.key === "Enter") {
+                                handleAdd(newRatePlan);
+                                setNewRatePlan("");
+                            }
+                        }}
                         className="border p-1 rounded flex-grow"
                         placeholder="Add a new Rate Plan..."
 
@@ -96,6 +105,8 @@ export default function Rateplans() {
                     >Add </button>
                 </div>
             </div>
+
+
         </div >
     </>
 }
