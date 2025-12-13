@@ -74,21 +74,24 @@ export default function ImportExportSettings() {
 
     return <>
         <div className="main-content">
-            <div className="flex gap-2">
+
+
+            <div className="flex gap-2 w-[280px]">
                 <button
-                    className="bg-blue-500 py-1 px-3 hover:bg-blue-600 text rounded text-white"
+                    className="flex-1 bg-blue-500 py-1 px-3 hover:bg-blue-600 text rounded text-white"
                     onClick={() => { handleExport() }}
                 >
                     Export settings
                 </button>
 
                 <button
-                    className="bg-green-500 py-1 px-3 hover:bg-green-600 text rounded text-white"
+                    className="flex-1 bg-green-500 py-1 px-3 hover:bg-green-600 text rounded text-white"
                     onClick={() => { handleImportClick() }}
                 >
                     Import settings
                 </button>
             </div >
+
             <input
                 type="file"
                 accept=".json"
