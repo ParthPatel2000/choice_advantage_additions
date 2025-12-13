@@ -58,7 +58,7 @@ export default function Rateplans() {
                 Turning this on will start checking all of the arrivals with the below rate plans, if any reservation has a rate plan not listed below, it will alert you.<br />
 
             </p>
-            <div className="border py-2 px-3 w-[280px] r border-gray-300 rounded-md mb-2">
+            <div className="sub-settings-container">
                 {
                     ratePlansList.length > 0 ? (ratePlansList.map((Rateplan, index) => {
                         <span className="py-2">Allowed Rate Plans:</span>

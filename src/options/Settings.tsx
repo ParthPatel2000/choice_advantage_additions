@@ -3,6 +3,7 @@ import Rateplans from "./Rateplans";
 import Injection from "./Injection";
 import ButtonsVisibility from "./ButtonsVisibility";
 import ImportExportSettings from "./ImportExportSettings";
+import PanelEdit from "./PanelEdit";
 
 export default function Settings() {
   return (
@@ -13,6 +14,7 @@ export default function Settings() {
       <Injection />
       <ButtonsVisibility />
       <ImportExportSettings />
+      <PanelEdit />
     </>
   );
 }

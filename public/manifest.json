@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Choice Advantage Additions",
   "description": "Add DNR/Watch list to choice Advantage.",
-  "version": "1.0.4",
+  "version": "1.0.5",
   "permissions": [
     "scripting",
     "activeTab",
