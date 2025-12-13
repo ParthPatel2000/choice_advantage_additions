@@ -13,8 +13,8 @@ export default function Settings() {
       <Rateplans />
       <Injection />
       <ButtonsVisibility />
-      <ImportExportSettings />
       <PanelEdit />
+      <ImportExportSettings />
     </>
   );
 }
