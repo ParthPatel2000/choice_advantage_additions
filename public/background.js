@@ -355,6 +355,11 @@ function normalize(str) {
   return (str || "").trim().toUpperCase();
 }
 
+function generateKey(last_name, first_name) {
+  const key = `${normalize(last_name)}|${normalize(first_name)}`;
+  return key
+}
+
 // Main function to compute stayovers
 async function computeStayovers() {
   const data = await chrome.storage.local.get(["arrivalsCache", "departuresCache"]);
@@ -364,15 +369,21 @@ async function computeStayovers() {
   // Build departure lookup
   const departureMap = new Map();
   departures.forEach(dep => {
-    const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
+    // const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
+    const key = generateKey(dep.last_name, dep.first_name);
     departureMap.set(key, dep.room);
   });
+
+  console.log("Departures map:", departureMap)
+
 
   // Build stayover list
   const stayovers = [];
   arrivals.forEach(arr => {
-    const key = `${normalize(arr.last_name)}| ${normalize(arr.first_name)} `;
+    const key = generateKey(arr.last_name, arr.first_name);
+    console.log("Arrival key:", key)
     if (departureMap.has(key)) {
+      console.log("found key:", key)
       stayovers.push({
         first_name: arr.first_name,
         last_name: arr.last_name,
