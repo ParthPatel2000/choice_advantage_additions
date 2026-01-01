@@ -279,6 +279,7 @@ function handleDepositSlot(slotIndex) {
 
     const cashDepValue = depositButtons[slotIndex] ?? "0";
     guestInfoCache["cashDep"] = cashDepValue;
+    storage.set("guestInfoCache", guestInfoCache)
 
     console.log(`Using cash deposit value for Slot ${slotIndex}: `, guestInfoCache["cashDep"]);
 
