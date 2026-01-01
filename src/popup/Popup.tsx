@@ -85,7 +85,7 @@ const Popup: React.FC = () => {
         <>
           <div className='btn-group flex items-center gap-2'>
             <h3 className="title flex-grow flex-shrink truncate">
-              Choice Advantage Additions
+              Advantage Additions
             </h3>
             <button
               className='mb-4 btn-blue rounded-full  text-lg flex items-center justify-center'
