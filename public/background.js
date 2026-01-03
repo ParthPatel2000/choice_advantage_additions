@@ -9,7 +9,6 @@ let matches = [];
 
 let scriptQueue = [];
 let currentTabId = null;
-let panelWindowId = null;
 
 
 (async () => {
@@ -279,6 +278,7 @@ function handleDepositSlot(slotIndex) {
 
     const cashDepValue = depositButtons[slotIndex] ?? "0";
     guestInfoCache["cashDep"] = cashDepValue;
+    storage.set("guestInfoCache", guestInfoCache)
 
     console.log(`Using cash deposit value for Slot ${slotIndex}: `, guestInfoCache["cashDep"]);
 
@@ -331,28 +331,14 @@ function runNextScript() {
   }, delay);
 }
 
-function openPanel() {
-  if (panelWindowId !== null) return;
-
-  chrome.windows.create(
-    {
-      url: chrome.runtime.getURL("panel.html"),
-      type: "popup",
-      width: 300,
-      height: 400,
-      top: 100,
-      left: 100,
-    },
-    (newWindow) => {
-      panelWindowId = newWindow.id;
-    }
-  );
-}
-
-
 // Normalize names (trim + uppercase)
 function normalize(str) {
   return (str || "").trim().toUpperCase();
+}
+
+function generateKey(last_name, first_name) {
+  const key = `${normalize(last_name)}|${normalize(first_name)}`;
+  return key
 }
 
 // Main function to compute stayovers
@@ -364,15 +350,21 @@ async function computeStayovers() {
   // Build departure lookup
   const departureMap = new Map();
   departures.forEach(dep => {
-    const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
+    // const key = `${normalize(dep.last_name)}|${normalize(dep.first_name)}`;
+    const key = generateKey(dep.last_name, dep.first_name);
     departureMap.set(key, dep.room);
   });
+
+  console.log("Departures map:", departureMap)
+
 
   // Build stayover list
   const stayovers = [];
   arrivals.forEach(arr => {
-    const key = `${normalize(arr.last_name)}| ${normalize(arr.first_name)} `;
+    const key = generateKey(arr.last_name, arr.first_name);
+    console.log("Arrival key:", key)
     if (departureMap.has(key)) {
+      console.log("found key:", key)
       stayovers.push({
         first_name: arr.first_name,
         last_name: arr.last_name,
