@@ -2,7 +2,7 @@
   "manifest_version": 3,
   "name": "Advantage Additions",
   "description": "Add DNR/Watch list to Advantage.",
-  "version": "1.0.6",
+  "version": "1.0.7",
   "permissions": [
     "scripting",
     "activeTab",
