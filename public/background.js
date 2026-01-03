@@ -9,7 +9,6 @@ let matches = [];
 
 let scriptQueue = [];
 let currentTabId = null;
-let panelWindowId = null;
 
 
 (async () => {
