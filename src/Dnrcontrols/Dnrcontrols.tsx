@@ -1,7 +1,7 @@
 // export default Dnrcontrols;
 import React, { useState, useEffect } from "react";
 //@ts-ignore
-import initializeWatchlistIndex from "../../public/scripts/utils/initializeWatchlistIndex.js"
+import {initializeWatchlistIndex} from "../../public/scripts/utils/initializeWatchlistIndex.js"
 
 type DnrRow = string[];
 

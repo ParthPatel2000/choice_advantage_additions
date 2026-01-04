@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import { importCsv } from "../utils/importCSV";
 import { exportCsv } from "../utils/exportCSV";
 //@ts-ignore
-import initializeWatchlistIndex from "../../public/scripts/utils/initializeWatchlistIndex.js"
+import { initializeWatchlistIndex } from "../../public/scripts/utils/initializeWatchlistIndex.js"
 
 
 type DnrRow = string[];

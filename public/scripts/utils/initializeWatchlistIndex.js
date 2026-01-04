@@ -1,7 +1,7 @@
 //initializeWatchlistIndex.js
-import generateKey from "./generateKey";
+import generateKey from "./generateKey.js";
 
-export default function initializeWatchlistIndex() {
+export function initializeWatchlistIndex() {
     chrome.storage.local.get("dnrList").then(
         (res) => {
             if (!res?.dnrList) return;

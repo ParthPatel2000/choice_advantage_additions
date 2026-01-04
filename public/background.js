@@ -1,4 +1,5 @@
 import { checkArrivalsAgainstLists } from './scripts/checkArrivalsAgainstLists.js'
+import { initializeWatchlistIndex } from './scripts/utils/initializeWatchlistIndex.js';
 import generateKey from './scripts/utils/generateKey.js';
 import { storage } from './storage.js';
 
@@ -19,6 +20,21 @@ let currentTabId = null;
   guestInfoCache = await storage.get("guestInfoCache") || {};
   matches = await storage.get("matches") || [];
 })();
+
+// Run this on startup / install
+chrome.runtime.onStartup.addListener(() => checkAndInitializeIndex());
+chrome.runtime.onInstalled.addListener(() => checkAndInitializeIndex());
+
+function checkAndInitializeIndex() {
+  chrome.storage.local.get(["dnrList", "watchlistIndex"]).then((res) => {
+    const { dnrList, watchlistIndex } = res;
+
+    if (dnrList && (!watchlistIndex || Object.keys(watchlistIndex).length === 0)) {
+      console.log("Initializing watchlist index because it's missing");
+      initializeWatchlistIndex();
+    }
+  });
+}
 
 async function clearAllCaches() {
   await storage.remove("arrivalsCache");
