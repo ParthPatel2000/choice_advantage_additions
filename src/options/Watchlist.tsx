@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { importCsv } from "../utils/importCSV";
 import { exportCsv } from "../utils/exportCSV";
+//@ts-ignore
+import initializeWatchlistIndex from "../../public/scripts/utils/initializeWatchlistIndex.js"
 
 
 type DnrRow = string[];
@@ -24,7 +26,9 @@ const Watchlist = () => {
 
   // Persist changes whenever dnrList changes
   useEffect(() => {
-    chrome.storage.local.set({ dnrList });
+    chrome.storage.local.set({ dnrList }).then(() => {
+      initializeWatchlistIndex();
+    })
   }, [dnrList]);
 
   // CSV Upload

@@ -6,6 +6,10 @@ const pageScripts = [
         // Example: Arrivals page
         identifier: () => document.forms['ViewArrivalsListForm'] !== undefined,
         script: 'scripts/scrapeArrivals.js'
+    },
+    {
+        identifier: () => document.querySelector("#Guest_Info_Body") !== null,
+        script: 'scripts/overwatch.js'
     }
 ];
 

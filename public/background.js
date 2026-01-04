@@ -1,4 +1,5 @@
 import { checkArrivalsAgainstLists } from './scripts/checkArrivalsAgainstLists.js'
+import generateKey from './scripts/utils/generateKey.js';
 import { storage } from './storage.js';
 
 let arrivalsCache = [];
@@ -10,7 +11,7 @@ let matches = [];
 let scriptQueue = [];
 let currentTabId = null;
 
-
+//Getters
 (async () => {
   arrivalsCache = await storage.get("arrivalsCache") || [];
   departuresCache = await storage.get("departuresCache") || [];
@@ -329,16 +330,6 @@ function runNextScript() {
     runNextScript();
 
   }, delay);
-}
-
-// Normalize names (trim + uppercase)
-function normalize(str) {
-  return (str || "").trim().toUpperCase();
-}
-
-function generateKey(last_name, first_name) {
-  const key = `${normalize(last_name)}|${normalize(first_name)}`;
-  return key
 }
 
 // Main function to compute stayovers

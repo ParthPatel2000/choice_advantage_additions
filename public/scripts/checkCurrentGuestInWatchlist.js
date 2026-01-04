@@ -12,7 +12,7 @@ h3s.forEach(h3 => {
     if (nameText) guestName = nameText;
   }
 });
-
+ 
 // 3️⃣ Ask background for matches cache
 chrome.runtime.sendMessage({ action: "get_matches_cache" }, (matches) => {
   if (!matches || !matches.length) return;
