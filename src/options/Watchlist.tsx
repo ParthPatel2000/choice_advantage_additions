@@ -214,8 +214,8 @@ const Watchlist = () => {
               </tr>
             </thead>
             <tbody>
-              {dnrList.map((row, i) => {
-                const index = i;
+              {[...dnrList].reverse().map((row, i) => {
+                const index = dnrList.length - 1 - i;
                 const isEditing = editingRowIndex === index;
                 return (
                   <tr key={index} className={`${getRowColor(row[3])} transition`}>
