@@ -3,7 +3,14 @@
     console.log("workflow running...")
 
     chrome.storage.local.get("cashDepBotWorkflow").then((res) => {
-        if (!res?.cashDepBotWorkflow) return;
+        if (!res?.cashDepBotWorkflow) {
+            stopBot()
+            return;
+        } 
+
+        function stopBot() {
+            chrome.storage.local.set({ "cashDepBotWorkflow": false })
+        }
 
         function waitForElement(selector, callback, timeout = 10000) {
             const start = Date.now();
@@ -37,9 +44,6 @@
             return true;
         }
 
-        function stopBot() {
-            chrome.storage.local.set({ "cashDepBotWorkflow": false })
-        }
 
 
         if (document.title === "Reservation Information") {
