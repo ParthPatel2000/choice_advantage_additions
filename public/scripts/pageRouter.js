@@ -10,6 +10,10 @@ const pageScripts = [
     {
         identifier: () => document.querySelector("#Guest_Info_Body") !== null,
         script: 'scripts/checkCurrentGuestInWatchlist.js'
+    },
+    {
+        identifier: () => document.querySelectorAll('form[name="ViewArrivalsListForm"]'),
+        script: 'scripts/scrapeArrivals.js'
     }
 ];
 

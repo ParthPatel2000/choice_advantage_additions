@@ -34,31 +34,13 @@
     "open_in_tab": true
   },
   "content_scripts": [
-    {
-      "matches": [
-        "https://www.choiceadvantage.com/choicehotels/ViewArrivalsList.init*"
-      ],
-      "js": [
-        "scripts/scrapeArrivals.js"
-      ],
-      "run_at": "document_end"
-    },
+    
     {
       "matches": [
         "https://www.choiceadvantage.com/choicehotels/ViewDeparturesList.init*"
       ],
       "js": [
         "scripts/scrapeDepartures.js"
-      ],
-      "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://www.choiceadvantage.com/choicehotels/FindInHouseGuestByAccount.do*",
-        "https://www.choiceadvantage.com/choicehotels/FindReservationWithAccountNumber.do?accountNumber=*"
-      ],
-      "js": [
-        "scripts/checkCurrentGuestInWatchlist.js"
       ],
       "run_at": "document_end"
     },
