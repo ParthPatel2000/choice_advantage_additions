@@ -14,6 +14,14 @@ const pageScripts = [
     {
         identifier: () => document.title === "View Departures List",
         script: 'scripts/scrapeDepartures.js'
+    },
+    {
+        identifier: () => document.title === "Guest Folio",
+        script: 'scripts/injectDepositButtons.js'
+    },
+    {
+        identifier: () => document.title === "Reservation Information",
+        script: 'scripts/injectDepositButtons.js'
     }
 ];
 
@@ -28,7 +36,7 @@ function waitForPageAndInject() {
                     // Ask background to inject
                     chrome.runtime.sendMessage({ action: 'inject_script', script: page.script });
                     console.log('Requested injection:', page.script);
-                    return;
+                    // return;
                 }
             } catch (err) { }
         }
