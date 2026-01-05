@@ -1,7 +1,7 @@
 // export default Dnrcontrols;
 import React, { useState, useEffect } from "react";
 //@ts-ignore
-import {initializeWatchlistIndex} from "../../public/scripts/utils/initializeWatchlistIndex.js"
+import { initializeWatchlistIndex } from "../../public/scripts/utils/initializeWatchlistIndex.js"
 
 type DnrRow = string[];
 
@@ -56,8 +56,8 @@ const Dnrcontrols: React.FC<DnrControlsProps> = ({ goHome }) => {
       const combined = [...prev, newRow];
       const unique: DnrRow[] = Array.from(new Map(combined.map(r => [r.join(","), r])).values());
       chrome.storage.local.set({ dnrList: unique }).then(() => {
-            initializeWatchlistIndex();
-          })
+        initializeWatchlistIndex();
+      })
       return unique;
     });
 
