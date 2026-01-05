@@ -1,47 +1,17 @@
 (function () {
     console.log("[Departures] Script Injected: waiting for departures list...");
 
-    // --- Wait for an element ---
-    function waitForElement(selector, timeout = 8000) {
-        return new Promise((resolve, reject) => {
-            const start = Date.now();
-            const timer = setInterval(() => {
-                const el = document.querySelector(selector);
-                if (el) {
-                    clearInterval(timer);
-                    resolve(el);
-                } else if (Date.now() - start > timeout) {
-                    clearInterval(timer);
-                    reject(`Timeout: ${selector} not found`);
-                }
-            }, 200);
-        });
-    }
-
     function splitName(raw) {
         const [last, first] = raw.split(",").map(s => s.trim());
         return { first_name: first, last_name: last };
     }
 
-    async function scrapeDepartures() {
+    function scrapeDepartures() {
         try {
-            const tbody = await waitForElement("#departuresList");
-            console.log("[Departures] departuresList found, waiting for rows...");
+            const tbody = document.querySelector("#departuresList");
 
-            // Wait for table rows
-            function waitForRows() {
-                return new Promise((resolve) => {
-                    const checker = setInterval(() => {
-                        const rows = tbody.querySelectorAll("tr");
-                        if (rows.length > 0) {
-                            clearInterval(checker);
-                            resolve(rows);
-                        }
-                    }, 200);
-                });
-            }
-
-            const rows = await waitForRows();
+        
+            const rows = tbody.querySelectorAll("tr");
             console.log(`[Departures] Found ${rows.length} rows, scraping...`);
 
             const departures = [];

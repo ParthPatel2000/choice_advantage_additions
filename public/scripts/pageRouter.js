@@ -12,13 +12,14 @@ const pageScripts = [
         script: 'scripts/checkCurrentGuestInWatchlist.js'
     },
     {
-        identifier: () => document.querySelectorAll('form[name="ViewArrivalsListForm"]'),
-        script: 'scripts/scrapeArrivals.js'
+        identifier: () => document.title === "View Departures List",
+        script: 'scripts/scrapeDepartures.js'
     }
 ];
 
 // Wait until at least one identifier is visible
 function waitForPageAndInject() {
+    console.log(document.title);
     const interval = setInterval(() => {
         for (const page of pageScripts) {
             try {

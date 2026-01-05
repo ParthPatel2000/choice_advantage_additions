@@ -34,16 +34,6 @@
     "open_in_tab": true
   },
   "content_scripts": [
-    
-    {
-      "matches": [
-        "https://www.choiceadvantage.com/choicehotels/ViewDeparturesList.init*"
-      ],
-      "js": [
-        "scripts/scrapeDepartures.js"
-      ],
-      "run_at": "document_end"
-    },
     {
       "matches": [
         "https://www.choiceadvantage.com/choicehotels/*"

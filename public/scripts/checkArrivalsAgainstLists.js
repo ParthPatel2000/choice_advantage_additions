@@ -1,12 +1,15 @@
+import generateKey from "./utils/generateKey.js";
+
 /**
  * Checks arrivals against DNR + Inspectors from Chrome local storage
  * (using array-of-arrays format)
  * Returns a Promise that resolves to an array of matches
  */
+
 export async function checkArrivalsAgainstLists(arrivals) {
   console.log("🔍 Fetching DNR and ratePlans list from chrome.storage.local...");
 
-  let { dnrList = [], ratePlans, ratePlansCheckFlag } = await chrome.storage.local.get(["dnrList", "ratePlans", "ratePlansCheckFlag"]);
+  let { watchlistIndex = {}, dnrList = [], ratePlans, ratePlansCheckFlag } = await chrome.storage.local.get(["dnrList", "ratePlans", "ratePlansCheckFlag", "watchlistIndex"]);
 
   if (dnrList.length < 1) {
     console.log("⚠ DNR list is empty");
@@ -36,7 +39,6 @@ export async function checkArrivalsAgainstLists(arrivals) {
       match = {
         last_name: arrival.last_name,
         first_name: arrival.first_name,
-        reservationNumber: arrival.reservationNumber,
         unknown_rate_plan: arrival.rate_plan,
         level: "medium"
       };
@@ -44,18 +46,14 @@ export async function checkArrivalsAgainstLists(arrivals) {
     }
 
     if (dnrList.length > 0) {
-      const DNRRow = dnrList.find(
-        row =>
-          row[1].toUpperCase() === arrival.last_name.toUpperCase() &&
-          row[0].toUpperCase() === arrival.first_name.toUpperCase()
-      );
+      const currentGuestKey = generateKey(arrival.last_name, arrival.first_name)
+      const DNRRow = watchlistIndex[currentGuestKey] ?? null
 
       if (DNRRow) {
         match = {
           ...match,
           last_name: arrival.last_name,
           first_name: arrival.first_name,
-          reservationNumber: arrival.reservationNumber,
           list: DNRRow[2] || "DNR/INSPECTOR",
           level: DNRRow[3],
           reason: DNRRow[4]
