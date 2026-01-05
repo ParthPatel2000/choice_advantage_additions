@@ -9,7 +9,7 @@ const pageScripts = [
     },
     {
         identifier: () => document.querySelector("#Guest_Info_Body") !== null,
-        script: 'scripts/overwatch.js'
+        script: 'scripts/checkCurrentGuestInWatchlist.js'
     }
 ];
 
