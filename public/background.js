@@ -252,7 +252,7 @@ function injectScript(files, callback) {
 }
 
 // Listen to tab updates (reloads, navigation, etc.)
-chrome.tabs.onUpdated.addListener((changeInfo, tab) => {
+chrome.tabs.onUpdated.addListener((tabId, changeInfo, tab) => {
   if (changeInfo.status === "complete") {
     runWorkflowsForTab(tab);
   }
