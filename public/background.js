@@ -187,7 +187,11 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       break;
 
     case "start_scrape_bot":
-      injectScript("scripts/scrapeDetails.js")
+      injectScript("scripts/scrapeDetails.js", () => {
+        chrome.storage.local.set({ "refundBotWorkflow": true }, () => {
+          injectScript("scripts/workflows/postRefund.js")
+        })
+      })
       break;
 
     case "start_fill_bot":
