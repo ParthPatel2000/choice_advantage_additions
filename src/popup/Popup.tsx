@@ -31,53 +31,6 @@ const Popup: React.FC = () => {
 
 
   const sendMessage = (action: string) => chrome.runtime.sendMessage({ action });
-
-
-  // const [logs, setLogs] = useState<string>('');
-  // const log = (msg: string) => setLogs(prev => prev + msg + '\n');
-
-  // async function viewCache() {
-  //   const get = (action: string) =>
-  //     new Promise((resolve) => {
-  //       chrome.runtime.sendMessage({ action }, (res) => {
-  //         resolve(res || null);
-  //       });
-  //     });
-
-  //   const [
-  //     guestInfo,
-  //     arrivals,
-  //     departures,
-  //     stayovers,
-  //     matches
-  //   ] = await Promise.all([
-  //     get("get_guest_info"),
-  //     get("get_arrivals_cache"),
-  //     get("get_departures_cache"),
-  //     get("get_stayovers_cache"),
-  //     get("get_matches_cache")
-  //   ]);
-
-  //   log("All caches fetched.");
-
-  //   const data = {
-  //     guestInfo,
-  //     arrivals,
-  //     departures,
-  //     stayovers,
-  //     matches
-  //   };
-
-  //   log("GuestInfo: " + JSON.stringify(data.guestInfo, null, 2));   // final combined output
-  //   log("Arrivals: " + JSON.stringify(data.arrivals, null, 2));   // final combined output
-  //   log("Departures: " + JSON.stringify(data.departures, null, 2));   // final combined output
-  //   log("Stayovers: " + JSON.stringify(data.stayovers, null, 2));   // final combined output
-  //   log("Watch List Matches: " + JSON.stringify(data.matches, null, 2));   // final combined output
-
-  //   return data;
-  // }
-
-
   return (
     <div className="panel">
 

@@ -20,6 +20,8 @@
                 type: "GUEST_INFO_DATA",
                 payload: guestData
             });
+            
+            chrome.runtime.sendMessage({action:"POST_GUEST_REFUND_BUTTON"})
 
             return guestData;
 

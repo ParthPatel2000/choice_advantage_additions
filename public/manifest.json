@@ -61,16 +61,6 @@
         "scripts/selectLeisureGuest.js"
       ],
       "run_at": "document_end"
-    },
-    {
-      "matches": [
-        "https://www.choiceadvantage.com/choicehotels/*"
-      ],
-      "js": [
-        "scripts/workflows/postDeposit.js",
-        "scripts/workflows/postRefund.js"
-      ],
-      "run_at": "document_end"
     }
   ]
 }

@@ -62,6 +62,7 @@
 
         // Send completion message exactly once
         chrome.runtime.sendMessage({ type: "FILL_GUEST_INFO_DONE" });
+        if (guestData.cashDep) { chrome.runtime.sendMessage({ action: "POST_DEPOSIT" }); }
 
         // Click the button
         saveBtn.click();

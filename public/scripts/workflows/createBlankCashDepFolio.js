@@ -1,16 +1,16 @@
 (function () {
     // chrome.storage.local.set({ "cashDepBotWorkflow": false }) important to have a flag to run the bot
-    
-    chrome.storage.local.get("cashDepBotWorkflow").then((res) => {
-        if (!res?.cashDepBotWorkflow) {
+
+    chrome.storage.local.get("createFolioWorkflow").then((res) => {
+        if (!res?.createFolioWorkflow) {
             stopBot()
             return;
-        } 
-        
-        function stopBot() {
-            chrome.storage.local.set({ "cashDepBotWorkflow": false })
         }
-        
+
+        function stopBot() {
+            chrome.storage.local.set({ "createFolioWorkflow": false })
+        }
+
         function waitForElement(selector, callback, timeout = 10000) {
             const start = Date.now();
             const interval = setInterval(() => {
@@ -24,7 +24,7 @@
                 }
             }, 200);
         }
-        
+
         function fillInput(inputEl, value) {
             if (!inputEl) return false;
             inputEl.value = value;
@@ -33,7 +33,7 @@
             inputEl.dispatchEvent(new KeyboardEvent("keyup", { bubbles: true, key: value[0] || "0" })); // keyup
             return true;
         }
-        
+
         function checkCheckbox(checkboxEl) {
             if (!checkboxEl) return false;
             if (!checkboxEl.checked) {
@@ -42,17 +42,17 @@
             }
             return true;
         }
-        
-        
-        console.log("Post Deposit workflow running...")
-        
+
+
+        console.log("Blank Cash Dep folio workflow running...")
+
         if (document.title === "Reservation Information") {
-            
+
             waitForElement('#guestFolioEnabled', (folioLink) => {
                 folioLink.click();
             });
         }
-        
+
         if (document.title === "Guest Folio") {
             function AddFolio() {
                 waitForElement('a.CHI_Link.CHI_OnlyLink', () => {
@@ -100,7 +100,6 @@
                     checkCheckbox(msCheckbox);
                     waitForElement('a.CHI_Button#save', (saveBtn) => {
                         saveBtn.click();
-                        // console.log("save btn simulation")
                     })
                 })
             })
@@ -110,29 +109,7 @@
             waitForElement('select[name="transactionCode"]', async (select) => {
                 select.value = "SD";
                 select.dispatchEvent(new Event("change", { bubbles: true }));
-
-                const guestInfo = await new Promise((resolve) => {
-                    chrome.runtime.sendMessage({ action: "get_guest_info" }, (response) => {
-                        resolve(response);
-                    });
-                });
-
-                if (!guestInfo || guestInfo.cashDep == null) {
-                    console.warn("No guest info/cashDep, aborting.");
-                    stopBot()
-                    return;
-                }
-
-                const amount = guestInfo.cashDep; // RAW USD VALUE
-
-                waitForElement('input[name="amount"]', (inputEl) => {
-                    fillInput(inputEl, amount);
-                    waitForElement('#saveButton', (saveBtn) => {
-                        stopBot()
-                        saveBtn.click()
-                    })
-                })
-
+                stopBot();
             })
         }
     })

@@ -113,9 +113,8 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
 
     case "GUEST_INFO_DATA":
       console.log("📥 Received guest info data:", msg.payload);
-      guestInfoCache = { ...guestInfoCache, ...msg.payload };
+      guestInfoCache = { ...msg.payload };
       storage.set("guestInfoCache", guestInfoCache)
-      runNextScript();
       break;
 
     case "STAYOVERS_DATA":
@@ -129,7 +128,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       console.log("📥 Cash Deposit folio balance received:", msg.payload);
       guestInfoCache["cashDep"] = msg.payload?.balance || 0;
       storage.set("guestInfoCache", guestInfoCache)
-      runNextScript();
       break;
 
     case "NO_CASH_DEP_FOLIO":
@@ -143,7 +141,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
     default:
       if (responses_list.includes(msg.type)) {
         console.log("📥 Received response:", msg.type);
-        runNextScript();
         break;
       }
       if (msg.type) console.log("Unhandeled messsage: ", msg.type);
@@ -180,7 +177,6 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
         target: { tabId: sender.tab.id },
         files: [msg.script]
       });
-
       return true;
 
 
@@ -190,48 +186,16 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       break;
 
     case "start_scrape_bot":
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        currentTabId = tabs[0].id;
-        scriptQueue = [
-          { file: "scripts/scrapeDetails.js", waitForMessage: "GUEST_INFO_DATA" },
-          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 250 },
-          { file: "scripts/selectFolioAndScrape.js", waitForMessage: ["CASH_DEP_FOLIO_BALANCE", "NO_CASH_DEP_FOLIO"], delayBeforeRun: 1000 },
-          { file: "scripts/clickPostCharge.js", waitForMessage: "POST_CHARGE_CLICKED", delayBeforeRun: 1000 },
-          { file: "scripts/postGuestRefund.js", waitForMessage: "GUEST_REFUND_POSTED", delayBeforeRun: 3000 },
-        ];
-        runNextScript();
-      });
+      injectScript("scripts/scrapeDetails.js")
       break;
 
     case "start_fill_bot":
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        currentTabId = tabs[0].id;
-        const hasCashDep = !!(guestInfoCache && guestInfoCache.cashDep);
+      injectScript("scripts/fillDetails.js");
+      break;
 
-        console.log("Starting bot. Cash deposit exists?", hasCashDep);
-
-        // --- BASE scripts that always run ---
-        scriptQueue = [
-          { file: "scripts/fillDetails.js", waitForMessage: "FILL_GUEST_INFO_DONE" },
-          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 3000 },
-          // { file: "scripts/selectFolioAndScrape.js", waitForMessage: ["CASH_DEP_FOLIO_BALANCE", "NO_CASH_DEP_FOLIO"], delayBeforeRun: 3000 },
-        ];
-
-        // --- Conditional branching ---  
-        if (hasCashDep) {
-          // If deposit exists, add the rest of steps
-          scriptQueue.push(
-            { file: "scripts/clickAddFolio.js", waitForMessage: "ADD_FOLIO_CLICKED", delayBeforeRun: 3000 },
-            { file: "scripts/createCashDepFolio.js", waitForMessage: "CASH_DEP_FOLIO_CREATED", delayBeforeRun: 3000 },
-            { file: "scripts/clickPostPayment.js", waitForMessage: "POST_PAYMENT_CLICKED", delayBeforeRun: 3000 },
-            { file: "scripts/postSecurityDeposit.js", waitForMessage: "SECURITY_DEPOSIT_POSTED", delayBeforeRun: 3000 },
-          );
-        } else {
-          console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
-        }
-
-        runNextScript();
-      });
+    case "POST_DEPOSIT":
+      chrome.storage.local.set({ "cashDepBotWorkflow": true })
+      injectScript("scripts/workflows/postDeposit.js")
       break;
 
     case "POST_DEPOSIT_SLT_0":
@@ -242,41 +206,14 @@ chrome.runtime.onMessage.addListener((msg, sender, sendResponse) => {
       handleDepositSlot(1);
       break;
 
-
     case "POST_GUEST_REFUND_BUTTON":
-      console.log("Starting refund workflow")
-
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        currentTabId = tabs[0].id;
-        scriptQueue = [
-          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/selectFolioAndScrape.js", waitForMessage: ["CASH_DEP_FOLIO_BALANCE", "NO_CASH_DEP_FOLIO"], delayBeforeRun: 1000 },
-          { file: "scripts/clickPostCharge.js", waitForMessage: "POST_CHARGE_CLICKED", delayBeforeRun: 1000 },
-          { file: "scripts/postGuestRefund.js", waitForMessage: "GUEST_REFUND_POSTED", delayBeforeRun: 1500 },
-        ];
-        runNextScript();
-      });
-
+      chrome.storage.local.set({ "refundBotWorkflow": true })
+      injectScript("scripts/workflows/postRefund.js")
       break;
 
     case "ADD_CASH_DEP_FOLIO":
-      console.log("Starting ADD FOLIO workflow.")
-
-      chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-        currentTabId = tabs[0].id;
-
-        console.log("Adding FOLIO");
-
-        // If deposit exists, add the rest of steps
-        scriptQueue = [
-          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/clickAddFolio.js", waitForMessage: "ADD_FOLIO_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/createCashDepFolio.js", waitForMessage: "CASH_DEP_FOLIO_CREATED", delayBeforeRun: 1500 },
-          { file: "scripts/clickPostPayment.js", waitForMessage: "POST_PAYMENT_CLICKED", delayBeforeRun: 1500 },
-        ]
-
-        runNextScript();
-      });
+      chrome.storage.local.set({ "createFolioWorkflow": true })
+      injectScript("scripts/workflows/createBlankCashDepFolio.js")
       break;
 
     default:
@@ -298,55 +235,66 @@ function handleDepositSlot(slotIndex) {
     storage.set("guestInfoCache", guestInfoCache)
 
     console.log(`Using cash deposit value for Slot ${slotIndex}: `, guestInfoCache["cashDep"]);
-
-    chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
-      currentTabId = tabs[0].id;
-      if (guestInfoCache.cashDep) {
-        scriptQueue = [
-          { file: "scripts/openFoliosView.js", waitForMessage: "FOLIO_VIEW_BUTTON_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/clickAddFolio.js", waitForMessage: "ADD_FOLIO_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/createCashDepFolio.js", waitForMessage: "CASH_DEP_FOLIO_CREATED", delayBeforeRun: 1500 },
-          { file: "scripts/clickPostPayment.js", waitForMessage: "POST_PAYMENT_CLICKED", delayBeforeRun: 1500 },
-          { file: "scripts/postSecurityDeposit.js", waitForMessage: "SECURITY_DEPOSIT_POSTED", delayBeforeRun: 1500 },
-        ];
-      } else {
-        console.warn("⚠ No cashDep in guestInfoCache — skipping deposit workflow.");
-      }
-      runNextScript();
-    });
+    chrome.storage.local.set({ "cashDepBotWorkflow": true })
+    injectScript("scripts/workflows/postDeposit.js")
   });
 }
 
-
-
-function runNextScript() {
-  if (!scriptQueue.length) {
-    console.log("No more scripts to run.");
-    return;
-  }
-
-  const next = scriptQueue.shift();
-
-  const delay = next.delayBeforeRun || 0;
-
-  setTimeout(() => {
+function injectScript(files, callback) {
+  chrome.tabs.query({ active: true, currentWindow: true }, (tabs) => {
+    const currentTabId = tabs[0].id;
     chrome.scripting.executeScript({
       target: { tabId: currentTabId },
-      files: [next.file]
-    });
-    console.log("🚀 Injected:", next.file);
-
-    // set expected message(s)
-    if (next.waitForMessage) {
-      console.log("⏳ Waiting for:", next.waitForMessage || null);
-      return;
-    }
-
-    // no wait, continue immediately
-    runNextScript();
-
-  }, delay);
+      files: Array.isArray(files) ? files : [files]
+    }, callback);
+  });
 }
+
+// List of scripts keyed by workflow flag
+const WORKFLOWS = {
+  createFolioWorkflow: ["scripts/workflows/createBlankCashDepFolio.js"],
+  refundBotWorkflow: ["scripts/workflows/postRefund.js"],
+  cashDepBotWorkflow: ["scripts/workflows/postDeposit.js"]
+};
+
+// Helper to inject scripts into a tab
+async function injectScripts(tabId, files) {
+  if (!files || !files.length) return;
+  try {
+    await chrome.scripting.executeScript({
+      target: { tabId },
+      files
+    });
+    console.log("Injected scripts:", files, "into tab", tabId);
+  } catch (err) {
+    console.error("Failed to inject scripts:", err);
+  }
+}
+
+// Check flags and inject scripts for a tab
+async function runWorkflowsForTab(tab) {
+  if (!tab?.url?.startsWith("https://www.choiceadvantage.com/choicehotels/")) return;
+
+  const res = await chrome.storage.local.get(Object.keys(WORKFLOWS));
+
+  for (const [flag, scripts] of Object.entries(WORKFLOWS)) {
+    if (res[flag]) {
+      injectScripts(tab.id, scripts);
+    }
+  }
+}
+
+// Listen to tab updates (reloads, navigation, etc.)
+chrome.tabs.onUpdated.addListener((changeInfo, tab) => {
+  if (changeInfo.status === "complete") {
+    runWorkflowsForTab(tab);
+  }
+});
+
+// Listen to new tabs being created
+chrome.tabs.onCreated.addListener((tab) => {
+  runWorkflowsForTab(tab);
+});
 
 // Main function to compute stayovers
 async function computeStayovers() {

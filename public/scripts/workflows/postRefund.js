@@ -1,7 +1,4 @@
 (function () {
-    // chrome.storage.local.set({ "cashDepBotWorkflow": false }) important to have a flag to run the bot
-    console.log("workflow running...")
-
     chrome.storage.local.get("refundBotWorkflow").then((res) => {
         if (!res?.refundBotWorkflow) {
             stopBot()
@@ -49,6 +46,7 @@
 
 
 
+        console.log("Post Refund workflow running...")
 
         if (document.title === "Reservation Information") {
 
