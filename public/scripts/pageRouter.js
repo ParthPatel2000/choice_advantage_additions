@@ -18,6 +18,10 @@ function waitForPageAndInject() {
                 script: 'scripts/checkCurrentGuestInWatchlist.js'
             },
             {
+                identifier: () => document.querySelector("#guestBlock") !== null,
+                script: 'scripts/checkWalkinInWatchlist.js'
+            },
+            {
                 identifier: () => document.title === "View Departures List",
                 script: 'scripts/scrapeDepartures.js'
             },
